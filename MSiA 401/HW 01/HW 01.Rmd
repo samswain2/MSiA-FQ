@@ -1,0 +1,129 @@
+---
+title: "HW 01"
+author: "Sam"
+date: "2022-09-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+$$
+
+$$
+
+
+## Question 4
+
+$$
+\frac{1}{S_{xx}}\sum_{i=1}^{n}(x_i-\bar{x})Cov(\bar{y}, y_i) = 0
+$$
+
+## Question 5
+
+```{r}
+df <- read.csv("Auto.csv", na.strings = TRUE)
+df <- transform(df, horsepower =as.integer(horsepower))
+```
+
+#### A.
+```{r}
+simple_reg <- lm(mpg~horsepower, data = df)
+x <- summary(simple_reg)
+x$coefficients
+```
+
+The estimated regression equation is $mpg = -0.158 * horsepower + 39.94$.
+
+#### B.
+The slope indicates that as you increase horsepower the mpg drops.
+
+#### D.
+Yes, the p-value of $7.032e^{-81}$ indicates that the relationship is very significant.
+
+#### E.
+````{r} 
+plot(df$horsepower, df$mpg)
+```
+
+Based on the plot above, we can see that the variables seem very strongly related.
+
+#### F.
+It tells us how well the model fits the data.
+
+#### G.
+```{r}
+predict(simple_reg, newdata =  data.frame(horsepower = c(98)))
+```
+
+The predicted mpg of a car with $98$ hp is $24.46708$.
+
+#### H.
+```{r}
+predict(simple_reg, newdata =  data.frame(horsepower = c(98)), interval = "prediction", level = .95)
+```
+
+The 95% PI is between $14.8094$ and $34.12476$.
+
+#### I.
+```{r}
+predict(simple_reg, newdata =  data.frame(horsepower = c(98)), interval = "confidence", level = .99)
+```
+
+The 99% CI is between $23.81669$ and $25.11747$.
+
+#### J.
+```{r}
+confint(simple_reg, 'horsepower', level=0.90)
+```
+
+The $90%$ CI for the slope is $-0.1684719$ to $-0.1472176$.
+
+#### K.
+```{r}
+plot(df$horsepower, df$mpg)
+abline(simple_reg, col = "blue")
+```
+
+The model doesn't seem to fit very well. From about 100 horsepower and up the model seems to predict a lot better compared to horsepower between 0 and 100.
+
+We assumed the data was linear at the beginning. After plotting the data we see that the data is not very linear. This means our model is not very valid.
+
+## Question 6
+
+#### A.
+```{r}
+plot(df, pch=".") 
+```
+
+Based on the scatter plots there seems to be a relationship between mpg and the following; displacement, horsepower, weight, and year. The other factors do not seem to have a relationship with mpg.
+
+```{r}
+round(cor(df[, 1:7], use = "pair"), 4)
+```
+
+The correlation is $-0.8044$. This means they are very negatively correlated. This tells us that higher displacement means lower mpg.
+
+#### C.
+```{r}
+fit = lm(mpg~.-name, df)
+summary(fit)
+```
+
+The null hypothesis is that none of the factors are significant while the alternative hypothesis is at least one is significant.
+
+The p-value we are using for this decision is $< 2.2e^{-16}$. Since this p-value is less than $0.05$ we conclude at least one factor variable is significant.
+
+#### D.
+Displacement, weight, year, and origin appear to be significant.
+
+#### E.
+It suggests that newer cars have higher mpgs than older cars.
+
+#### F.
+It suggests that cars with higher displacement have higher mpg. In other words, it suggests that there is a positive relationship.
+
+This contradicts what we said in 6b. From 6b, we would think the coefficient would be negative. I think our conclusion in 6b is more plausible because the other factors could be disrupting the effect of displacement and causing the coefficient to be positive when mpg is so negatively correlated with displacement. 
