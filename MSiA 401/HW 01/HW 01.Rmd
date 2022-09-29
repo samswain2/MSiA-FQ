@@ -66,7 +66,7 @@ x_1a_{k1} + \  ... \  +(\sum_{i=1}^{2}a_{ik}x_i + x_ka_{kk}) + \ ... \ + x_2a_{k
 \end{bmatrix}x = 
 \\
 (A + A^{\top})x
-As \ we \ know \ A \ is \ symmetric \ then
+\ As \ we \ know \ A \ is \ symmetric \ then
 \\ 
 A = A^{\top}. \ Thus \\
 \frac{\partial x^{\top} Ax}{\partial x} = 2Ax
