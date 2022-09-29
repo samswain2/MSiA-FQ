@@ -12,7 +12,64 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Question 1
 
 $$
-
+x^{\top}Ax = 
+\begin{bmatrix}
+x_{1} & x_{2}
+\end{bmatrix}
+\begin{bmatrix}
+a_{11} & a_{21}\\
+a_{12} & a_{22}
+\end{bmatrix}
+\begin{bmatrix}
+x_{1}\\
+x_{2}
+\end{bmatrix} = 
+\begin{bmatrix}
+(x_1 * a_{11} + x_2 * a_{12}) & (x_1 * a_{21} + x_2 * a_{22})
+\end{bmatrix}
+\begin{bmatrix}
+x_{1}\\
+x_{2}
+\end{bmatrix}
+\\
+= 
+\begin{bmatrix}
+\sum_{i=1}^{2}a_{i1}x_i & \sum_{i=1}^{2}a_{i2}x_i
+\end{bmatrix}
+\begin{bmatrix}
+x_{1}\\
+x_{2}
+\end{bmatrix} = 
+x_1\sum_{i=1}^{2}a_{i1}x_i + x_2\sum_{i=1}^{2}a_{i1}x_i + x_1\sum_{i=1}^{2}a_{i2}x_i + x_2\sum_{i=1}^{2}a_{i2}x_i = 
+\\
+\sum_{j=1}^{2}x_j\sum_{i=1}^{2}a_{ij}x_i
+\\
+Consider \ the\  k^{th} \ row \ in \ the \ above \ vector
+\\
+\frac{\partial x^{\top} Ax}{\partial x} =
+\begin{bmatrix}
+\frac{\partial x^{\top} Ax}{\partial x_1}\\
+\frac{\partial x^{\top} Ax}{\partial x_2}
+\end{bmatrix} = 
+\frac{\partial x^{\top} Ax}{\partial x_k} = 
+\frac{\partial }{\partial x_k}
+(x_1\sum_{i=1}^{2}a_{i1}x_i + x_2\sum_{i=1}^{2}a_{i1}x_i + x_1\sum_{i=1}^{2}a_{i2}x_i + x_2\sum_{i=1}^{2}a_{i2}x_i) = 
+\\
+x_1a_{k1} + \  ... \  +(\sum_{i=1}^{2}a_{ik}x_i + x_ka_{kk}) + \ ... \ + x_2a_{k2} = 
+\sum_{j=1}^{2}a_{kj}x_j + \sum_{i=1}^{2}a_{ik}x_i = 
+\\
+[(k^{th} \ row \ of \ A) + (transpose \ of \ k^{th} \ column \ of \ A)]x = 
+\\
+\begin{bmatrix}
+[(1^{st} \ row \ of \ A) + (transpose \ of \ 1^{st} \ column \ of \ A)]\\
+[(2^{nd} \ row \ of \ A) + (transpose \ of \ 2^{nd} \ column \ of \ A)]
+\end{bmatrix}x = 
+\\
+(A + A^{\top})x
+As \ we \ know \ A \ is \ symmetric \ then
+\\ 
+A = A^{\top}. \ Thus \\
+\frac{\partial x^{\top} Ax}{\partial x} = 2Ax
 $$
 
 
