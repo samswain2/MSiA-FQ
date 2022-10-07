@@ -48,6 +48,7 @@ def print_correct(desc):
     correct_str = 'testing ' + desc + ' ------- CORRECT'
     # print(correct_str)
     # print('#' * 50)
+    # print("CORRECT")
     # print()
 
 
@@ -58,7 +59,7 @@ def test_correctness(func, test_itr, key, reverse, desc):
     correct = 0
     try:
         test = func(test_itr, key=key, reverse=reverse)
-        # print(test) s
+        # print(test)
     except:
         print_error(None, result, desc)
 
@@ -91,7 +92,7 @@ def test_case(func, test_itr, desc='', key=None, reverse=False):
 
 
 def runner_reverse(func, test, key=None):
-    # print(func, test, key) s 
+    # print(func, test, key)
     return test_case(func, test,
                      desc='[' + ', '.join([str(item) for item in test]) + ']',
                      key=key,

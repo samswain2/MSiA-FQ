@@ -23,23 +23,18 @@ class MySorted:
                 return x
             key=key
 
-        for _ in range(0, len(a_list)):
-            try:
-                if swaps == temp:
-                    break
-            except NameError:
-                pass
-            
-            temp = swaps
-
-            for i in range(0, len(a_list)-1):
-                if key(a_list[i]) > key(a_list[i+1]):
-                    a_list[i], a_list[i+1] = a_list[i+1], a_list[i]
-                    swaps += 1
+        for pass_num in range(len(a_list) - 1, 0, -1):
+            for i in range(pass_num):
                 compares += 1
+                if reverse:
+                    if key(a_list[i]) < key(a_list[i + 1]):                
+                        a_list[i],a_list[i + 1] = a_list[i + 1] ,a_list[i]
+                        swaps += 1
+                else:
+                    if key(a_list[i]) > key(a_list[i + 1]):                
+                        a_list[i],a_list[i + 1] = a_list[i + 1] ,a_list[i]
+                        swaps += 1
 
-        if reverse:
-            return [a_list[::-1], compares, swaps, time.perf_counter() - ft]
 
         return [a_list, compares, swaps, time.perf_counter() - ft]
 
