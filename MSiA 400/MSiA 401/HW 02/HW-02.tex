@@ -1,0 +1,288 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={HW 02},
+  pdfauthor={Group 10},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{HW 02}
+\author{Group 10}
+\date{2022-10-03}
+
+\begin{document}
+\maketitle
+
+\hypertarget{r-markdown}{%
+\subsection{R Markdown}\label{r-markdown}}
+
+\hypertarget{read-csv}{%
+\paragraph{Read csv}\label{read-csv}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{auto }\OtherTok{=} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"Auto.csv"}\NormalTok{, }\AttributeTok{na.strings =} \StringTok{"NA"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{a}{%
+\paragraph{1(a)}\label{a}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{auto}\SpecialCharTok{$}\NormalTok{origin }\OtherTok{=} \FunctionTok{factor}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{origin, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\FunctionTok{c}\NormalTok{(}\StringTok{"US"}\NormalTok{, }\StringTok{"Europe"}\NormalTok{, }\StringTok{"Japan"}\NormalTok{))}
+
+\NormalTok{freq }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{origin)}
+\FunctionTok{barplot}\NormalTok{(freq)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW-02_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\hypertarget{b}{%
+\paragraph{1(b)}\label{b}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lmb }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(mpg }\SpecialCharTok{\textasciitilde{}}\NormalTok{ origin }\SpecialCharTok{+}\NormalTok{ weight }\SpecialCharTok{+}\NormalTok{ year, }\AttributeTok{data =}\NormalTok{ auto)}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(lmb)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW-02_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+The plots indicate that: - The error term is not normally distributed -
+There is variance is not constant, thus heteroskedasticity is present
+
+\hypertarget{c}{%
+\paragraph{1(c)}\label{c}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lmc }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(}\FunctionTok{log}\NormalTok{(mpg) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ origin }\SpecialCharTok{+} \FunctionTok{log}\NormalTok{(weight) }\SpecialCharTok{+} \FunctionTok{poly}\NormalTok{(year, }\DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ auto)}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(lmc)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW-02_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+The model assumptions seem to have been roughly satisfied now.
+
+\hypertarget{d}{%
+\paragraph{1(d)}\label{d}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{year, }\FunctionTok{log}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{mpg), }
+     \AttributeTok{main=}\StringTok{"Log(mpg) vs year"}\NormalTok{, }
+     \AttributeTok{xlab =} \StringTok{"Year"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"MPG"}\NormalTok{)}
+\NormalTok{ft }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(}\FunctionTok{log}\NormalTok{(mpg) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ year, }\AttributeTok{data =}\NormalTok{ auto)}
+\FunctionTok{abline}\NormalTok{(ft)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW-02_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+The relationship appears linear based on the plot above.
+
+\hypertarget{e}{%
+\paragraph{1(e)}\label{e}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(lmc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(mpg) ~ origin + log(weight) + poly(year, 2), 
+##     data = auto)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.37408 -0.06782  0.00899  0.06903  0.35766 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)    10.04554    0.21874  45.925  < 2e-16 ***
+## originEurope    0.06683    0.01763   3.791 0.000174 ***
+## originJapan     0.03197    0.01794   1.782 0.075477 .  
+## log(weight)    -0.87503    0.02704 -32.362  < 2e-16 ***
+## poly(year, 2)1  2.47360    0.11953  20.694  < 2e-16 ***
+## poly(year, 2)2  0.46703    0.11490   4.065 5.81e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1136 on 391 degrees of freedom
+## Multiple R-squared:  0.8898, Adjusted R-squared:  0.8884 
+## F-statistic: 631.7 on 5 and 391 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{weight, auto}\SpecialCharTok{$}\NormalTok{mpg)}
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{log}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{weight), }\FunctionTok{log}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{mpg))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW-02_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+It tells us that as you increase the weight the mpg falls. The
+relationship for the unlogged version is similar, less linear, but still
+negative.
+
+\hypertarget{a-1}{%
+\paragraph{2(a)}\label{a-1}}
+
+\[
+y_i = \gamma_0 + \gamma_1(x_i-\bar{x}) + \gamma_2(x_i-\bar{x})^2 + e_i = 
+\\
+\gamma_0 + y_1x_i - y_1\bar{x} + y_2x_i^2 - 2y_2x_i\bar{x} + \gamma_2\bar{x}^2 + e_i = 
+\\
+(\gamma_0 - \gamma_1\bar{x} + \gamma_2\bar{x}^2) + (\gamma_1 - 2\gamma_2\bar{x})x_i + \gamma_2x_i^2 + e_i 
+\\
+\therefore \beta_0 = \gamma_0 - \gamma_1\bar{x} + \gamma_2\bar{x}^2
+\\
+\beta_1 = \gamma_1 - 2\gamma_2\bar{x}
+\\
+\beta_2 = \gamma_2
+\]
+
+\hypertarget{b-1}{%
+\paragraph{2(b)}\label{b-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{coef}\NormalTok{(}\FunctionTok{lm}\NormalTok{(mpg }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(year, }\DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ auto))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    (Intercept) poly(year, 2)1 poly(year, 2)2 
+##       23.51587       90.55313       27.52983
+\end{verbatim}
+
+\hypertarget{c-1}{%
+\paragraph{2(c)}\label{c-1}}
+
+The correlation between year and year squared is
+\texttt{cor(auto\$year,\ (auto\$year)\^{}2)}.
+
+\hypertarget{d-1}{%
+\paragraph{2(d)}\label{d-1}}
+
+The mean of year is \texttt{mean(auto\$year)}.
+
+\hypertarget{e-1}{%
+\paragraph{2(e)}\label{e-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{auto}\SpecialCharTok{$}\NormalTok{centered }\OtherTok{\textless{}{-}}\NormalTok{ auto}\SpecialCharTok{$}\NormalTok{year }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(auto}\SpecialCharTok{$}\NormalTok{year)}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

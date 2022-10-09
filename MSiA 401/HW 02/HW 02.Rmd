@@ -40,9 +40,13 @@ The plots indicate that:
 
 ##### 1(c)
 ```{r}
-lmc <- lm(log(mpg) ~ origin + log(weight) + poly(year, 2), data = auto)
+lmc <- lm(log(mpg) ~ origin + log(weight) + year + I(year^2), data = auto)
 par(mfrow=c(2,2))
 plot(lmc)
+```
+
+```{r}
+summary(lmc)
 ```
 
 The model assumptions seem to have been roughly satisfied now.
@@ -52,11 +56,11 @@ The model assumptions seem to have been roughly satisfied now.
 plot(auto$year, log(auto$mpg), 
      main="Log(mpg) vs year", 
      xlab = "Year", ylab="MPG")
-ft <- lm(log(mpg) ~ year, data = auto)
-abline(ft)
+
+min = -coef(lmc)[5] / (2 * coef(lmc)[6])
 ```
 
-The relationship appears linear based on the plot above.
+The relationship appears U-shaped based on the plot above. The minimum is `r min`.
 
 ##### 1(e)
 ```{r}

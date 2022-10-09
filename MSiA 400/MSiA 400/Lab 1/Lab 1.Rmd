@@ -1,0 +1,33 @@
+---
+title: "Lab 1"
+author: "Sam"
+date: "2022-09-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read Data
+
+```{r}
+df <- read.table("height.txt", header = TRUE)
+
+m <- df$Male
+f <- df$Female
+```
+
+## Compute Stats
+
+```{r}
+cov(m, f)
+```
+
+## Graph
+
+```{r}
+par(mfrow = c(1, 2), cex = 0.7)
+hist(f, breaks = 4)
+hist(f, breaks = seq(1.40, 1.75, by = 0.3))
+```
