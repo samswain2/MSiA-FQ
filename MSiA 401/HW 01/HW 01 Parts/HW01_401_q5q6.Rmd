@@ -1,0 +1,140 @@
+---
+title: "HW 01"
+author: "Group 10"
+date: "2022-09-30"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 5
+
+```{r}
+## load the data
+setwd("/Users/nuke2/Desktop/NW Work/MSiA 401/HW 01/HW 01 Parts")
+auto <- read.csv("Auto.csv", na.strings = "?")
+auto = na.omit(auto)
+```
+
+#### 5(a) 
+
+The estimated regression equation is $mpg = -0.158 * horsepower + 39.936$.
+
+```{r}
+simple_reg <- lm(mpg~horsepower, data = auto)
+summary(simple_reg)
+```
+
+#### 5(b) 
+
+The slope indicates a negative relationship between horsepower and mpg. As you increase horsepower the mpg drops.
+
+#### 5(d)
+
+To test the hypotheses (with Type I error rate 0.5)\ $H_{0}: \beta_{1} = 0$ versus\ $H_{1}: \beta_{1} \neq 0$\ P-value = $2.2e^{-16} < 0.05$, so reject $H_{0}$ and conclude $\beta_{1} \neq 0$. There is a significant relationship between mpg and horsepower.
+
+#### 5(e) 
+
+The R-squared score is 0.606, meaning 60.6% of variation is explained by the model.The relationship is relatively strong.
+
+#### 5(f) 
+
+The residual standard error is the standard error of estimate. It is used to measure how well a regression model fits the data set. 
+
+#### 5(g) 
+
+The predicted mpg of a car with 98 horsepower is 24.467.
+
+```{r}
+predict(simple_reg, data.frame(horsepower = 98))
+```
+
+#### 5(h) 
+
+The 95% PI is (14.809, 34.125).
+
+```{r}
+predict(simple_reg, data.frame(horsepower = 98), interval = "prediction", level = 0.95 )
+```
+
+#### 5(i) 
+
+The 99% CI is (23.817, 25.117).
+
+```{r}
+predict(simple_reg, data.frame(horsepower = 98), interval = "confidence", level = .99)
+```
+
+#### 5(j) 
+
+The 90% CI for the slope is (-0.168, -0.147).
+
+```{r}
+confint(simple_reg, 'horsepower', level=0.90)
+```
+
+#### 5(k) 
+
+Our model assumes that there is a linear relationship between horsepower and mpg. However, instead of a straight line, the scatter plot is curve shaped, indicating potential non-linearity between horsepower and mpg. 
+
+
+```{r}
+plot(auto$horsepower, auto$mpg)
+abline(simple_reg, col = "blue")
+```
+
+## Question 6
+
+```{r}
+plot(auto, pch=".") # part a
+round(cor(auto[,1:7], use="pair"),4) # part b
+fit = lm(mpg~.-name, auto) # part c
+summary(fit)
+```
+
+#### 6(a) 
+
+The scatter plot indicates relatively strong relationship between mpg and displacement, mpg and horsepower, mpg and weight. There is weak relationship between mpg and acceleration, mpg and year. Lastly from the scatter plot, there is no significant linear relationship between mpg and year, and mpg and origin.
+
+
+#### 6(b) 
+
+The correlation between mpg and displacement is -0.805, indicating a strong negative relationship, and mpg tends to decrease when displacement increases.
+
+```{r}
+round(cor(auto[, 1:7], use = "pair"), 4)
+```
+
+#### 6(c) 
+
+The null hypothesis in this case is that all of the regression coefficients are 0, and the alternative hypothesis states that at least one coefficient is nonzero.\ $H_{0}: \beta_{1} = \beta_{2} = \beta_{3} = \beta_{4} = \beta_{5} = \beta_{6} = \beta_{7} =0$ versus \ $H_{1}: at \ least \ one\ \beta_{j} \neq 0$ \ According to the model, the p-value is $2.2e^{-16} < 0.05$. Therefore we reject the null hypothesis and conclude that at least one predictor is significant.
+
+```{r}
+fit = lm(mpg~.-name, auto)
+summary(fit)
+```
+
+#### 6(d) 
+
+Weight, year, and origin appear to have a statistically significant relationship to mpg under 0.001 significant level. Displacement is significant under 0.01 significant level.
+
+#### 6(e) 
+
+The slope coefficient for the year variable is around 0.75, suggesting a positive relationship between year and mpg. When model year increases by 1, mpg could increase by 0.75. Since the higher the mpg, the more economically friendly the car is, this coefficient suggests that newer cars are more economically friendly. 
+
+#### 6(f) 
+
+The slope coefficient for the displacement variable is around 0.02, suggesting a weak positive relationship between displacement and mpg. This discovery contradicts with findings from 6b (there is a negative relationship between displacement and mpg, the lower the displacement, the less fuel it consumes and thus higher mpg). 
+
+We think the findings from 6b is more plausible because there can be collinearity between displacement and other predictors in the multiple regression model. From the correlation matrix below, we can see that displacement is strongly correlated with cylinders, horsepower, and weight. In this case, further analysis such as variable selection and dimension reduction is needed.
+
+```{r}
+auto_temp = auto[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year", "origin")]
+cor(auto_temp)
+```
+
+
