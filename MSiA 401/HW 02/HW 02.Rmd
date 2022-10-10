@@ -23,8 +23,10 @@ auto = read.csv("Auto.csv", na.strings = "NA")
 auto$origin = factor(auto$origin, 1:3, c("US", "Europe", "Japan"))
 
 freq <- table(auto$origin)
-barplot(freq)
+barplot(freq, main = "Frequency of vehicle production in different countries", xlab = "Country", ylab = "Frequency")
 ```
+
+Above you can see the frequency is much greater in the US.
 
 ##### 1(b)
 ```{r}
@@ -36,7 +38,14 @@ plot(lmb)
 
 The plots indicate that:
 - The error term is not normally distributed
-- There is variance is not constant, thus heteroskedasticity is present
+- The variance is not constant, thus heteroskedasticity is present
+- The data is not normally distributed
+
+We can tell that the The error term is not normally distributed by looking at the Residuals vs Fitted plot. The red line doesn't move along 0 at all. It looks more like a quadratic function.
+
+The variance as x increases on the Residuals vs Fitted plot which is an indicator that heteroskedasticity is present. 
+
+We can see from the QQ plot that the data doesn't follow the line. Towards the top the data skews upwards.
 
 ##### 1(c)
 ```{r}
@@ -50,6 +59,13 @@ summary(lmc)
 ```
 
 The model assumptions seem to have been roughly satisfied now.
+
+The previously unsatisfied assumptions:
+- Heteroskedacicity
+- Error term is not normally distributed
+- Data is not normally distributed
+
+When looking at the Residuals vs Fitted plot, we see the line follows 0 well and the variance is pretty much constant for each x value. We also see from the QQ plot that the data is more normally distributed now.
 
 ##### 1(d)
 ```{r}

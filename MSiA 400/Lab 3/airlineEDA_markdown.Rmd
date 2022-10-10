@@ -1,0 +1,258 @@
+---
+title: "airlineEDA_markdown"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+date: "2022-08-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)   
+library(ggplot2) 
+setwd("C:/Users/a1184/MSiA_Director_Volunteer")
+```
+
+## Read in Datasets
+
+Read in dataset January2019 and July2019 (provided)
+
+```{r}
+January2019 <- read.csv("On_Time_Reporting_Carrier_On_Time_Performance_2019_1.csv",
+                        header = TRUE, sep = ",")
+July2019 <- read.csv("On_Time_Reporting_Carrier_On_Time_Performance_2019_7.csv",
+                     header = TRUE, sep = ",")
+```
+
+See column names:
+```{r}
+names(January2019)
+```
+
+
+
+
+## Data Selection
+
+columns to keep - total 29
+
+```{r}
+keep_names <- c("Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
+                "ArrTime", "CRSArrTime", "Reporting_Airline","Flight_Number_Reporting_Airline", 
+                "Tail_Number", "ActualElapsedTime", "CRSElapsedTime", "AirTime", "ArrDelay", "DepDelay", "Origin",
+                "Dest","Distance", "TaxiIn", "TaxiOut", "Cancelled",
+                "CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
+                "LateAircraftDelay")
+
+#Note: DayOfWeek - 1 is Monday
+```
+
+Select columns, and randomly sample 100K observations from each dataframe
+```{r}
+temp <- select(January2019, all_of(keep_names))
+names(temp)
+# rename some of the variables
+temp <- temp %>% rename(UniqueCarrier = Reporting_Airline,
+                        FlightNum = Flight_Number_Reporting_Airline,
+                        TailNum = Tail_Number)
+temp100k <- sample_n(temp, 100000)
+jan <- temp100k
+```
+
+```{r}
+temp <- select(July2019, all_of(keep_names))
+names(temp)
+temp <- temp %>% rename(UniqueCarrier = Reporting_Airline,
+                        FlightNum = Flight_Number_Reporting_Airline,
+                        TailNum = Tail_Number)
+temp100k <- sample_n(temp, 100000)
+jul <- temp100k
+
+rm(temp); rm(temp100k)
+```
+## End Data Selection
+
+## EDA
+
+```{r}
+head(jan, n=5)
+head(jul, n=5)
+```
+
+Compute missing data proportion
+
+```{r}
+sapply(jan, function(col)
+  sum(is.na(col)) / length(col)
+) %>% round(digits=2)
+sapply(jul, function(col)
+  sum(is.na(col)) / length(col)
+) %>% round(digits=2)
+
+# What do you observe
+```
+
+```{r}
+select(jan, ArrDelay, CarrierDelay:LateAircraftDelay) %>% head(n=10)
+select(jul, ArrDelay, CarrierDelay:LateAircraftDelay) %>% head(n=20)
+```
+
+
+For a comprehensive view on handling missing data in R see here:
+https://rmisstastic.netlify.app/
+
+## Flight Data
+
+Number of flights
+
+```{r}
+par(mfrow=c(2,2))
+barplot(table(jan$DayofMonth), main="January: Day")
+barplot(table(jan$DayOfWeek), main="January: Weekday (1=Monday)")
+barplot(table(jul$DayofMonth), main="July: Day")
+barplot(table(jul$DayOfWeek), main="July: Weekday (1=Monday)")
+```
+
+Departure Time
+
+```{r}
+par(mfrow=c(1,2))
+hist(jan$CRSDepTime, main = "January: Scheduled Departure Time")
+hist(jul$CRSDepTime, main = "July: Scheduled Departure Time")
+```
+
+```{r}
+par(mfrow=c(2,3))
+hist(jan$DepDelay, main = "January: Departure Delay, minutes")
+hist(jan$ArrDelay, main = "January: Arrival Delay, minutes")
+plot(jan$DepDelay, jan$ArrDelay, main = "January")
+abline(0,1)
+
+hist(jul$DepDelay, main =  "July: Departure Delay, minutes")
+hist(jul$ArrDelay, main = "July: Arrival Delay, minutes")
+plot(jul$DepDelay, jul$ArrDelay)
+abline(0,1)
+```
+
+```{r}
+par(mfrow=c(1,1))
+plot(jan$CRSDepTime, jan$ArrDelay, 
+     main = "January: Arrival Delay vs Scheduled Departure Time")
+
+```
+
+```{r}
+head(jan$CRSDepTime)
+```
+
+Distance and AirTime
+
+```{r}
+par(mfrow=c(1,2))
+plot(jan$Distance, jan$AirTime)
+jan[ which(jan$AirTime>500) , ]
+
+plot(jul$Distance, jul$AirTime)
+jul[ which(jul$AirTime>500) , ]
+```
+
+## Feature Engineering
+
+Weekday
+
+```{r}
+jan$weekday <- factor(jan$DayOfWeek, 
+                      labels=c("Mon","Tue","Wed","Thu","Fri","Sat","Sun"))
+jul$weekday <- factor(jul$DayOfWeek, 
+                      labels=c("Mon","Tue","Wed","Thu","Fri","Sat","Sun"))
+```
+
+log-transform delay times
+
+```{r}
+summary(jan$ArrDelay)
+```
+
+```{r}
+#pmax function returns the parallel maxima of two or more input vectors.
+jan$ArrDelay <- pmax(0, jan$ArrDelay)  
+jan$DepDelay <- pmax(0, jan$DepDelay)
+jul$ArrDelay <- pmax(0, jul$ArrDelay)
+jul$DepDelay <- pmax(0, jul$DepDelay)
+summary(jan$ArrDelay)
+#Address zeros for logs
+jan$logArrDelay <- log(1 + jan$ArrDelay)
+jan$logDepDelay <- log(1 + jan$DepDelay)
+jul$logArrDelay <- log(1 + jul$ArrDelay)
+jul$logDepDelay <- log(1 + jul$DepDelay)
+summary(jan$logArrDelay)
+```
+
+Transform Departure Time
+
+```{r}
+# %% is the modulo operation
+jan$DecimalDepTime <- floor(jan$CRSDepTime / 100) + 
+  (jan$CRSDepTime %% 100)/60
+head(jan$CRSDepTime)
+head(jan$DecimalDepTime)
+```
+
+```{r}
+jul$DecimalDepTime <- floor(jul$CRSDepTime / 100) + 
+  (jul$CRSDepTime %% 100)/60
+head(jul$CRSDepTime)
+head(jul$DecimalDepTime)
+```
+
+Average Speed
+
+```{r}
+par(mfrow=c(1,2))
+jan$speed <- jan$Distance / (jan$AirTime/60)
+boxplot(jan$speed)
+jul$speed <- jul$Distance / (jul$AirTime/60)
+boxplot(jul$speed)
+```
+
+```{r}
+filter(jan, speed >= 650)
+#remove speeds greater than 650 mph
+jan_low_speed <- filter(jan, speed <= 650)
+```
+
+Flight delay by time of day
+
+```{r}
+#Add a smoothed conditional mean geom_smooth
+ggplot(jan, aes(x=DecimalDepTime, y=ArrDelay)) +
+  geom_point() + geom_smooth()
+ggplot(jan, aes(x=DecimalDepTime, y=logArrDelay)) +
+  geom_point(alpha=0.8, shape = ".") + geom_smooth(colour = "darkgreen")
+#alpha is the transparency
+#geom_smooth uses gam for more than 1000 points
+```
+
+```{r}
+ggplot(jul, aes(x=DecimalDepTime, y=ArrDelay)) +
+  geom_point() + geom_smooth()
+ggplot(jul, aes(x=DecimalDepTime, y=logArrDelay)) +
+  geom_point(alpha=0.8, shape = ".") + geom_smooth(colour = "darkgreen")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
