@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Homework 2
@@ -24,6 +24,10 @@ auto$origin = factor(auto$origin, 1:3, c("US", "Europe", "Japan"))
 
 freq <- table(auto$origin)
 barplot(freq, main = "Frequency of vehicle production in different countries", xlab = "Country", ylab = "Frequency")
+```
+
+```{r}
+prop.table(table(auto$origin))
 ```
 
 Above you can see the frequency is much greater in the US.
