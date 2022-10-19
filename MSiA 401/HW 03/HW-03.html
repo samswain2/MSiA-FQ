@@ -401,9 +401,9 @@ summary(fit_1)</code></pre>
 ## Residual standard error: 3.253 on 390 degrees of freedom
 ## Multiple R-squared:  0.8299, Adjusted R-squared:  0.8273 
 ## F-statistic: 317.1 on 6 and 390 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>Positive relationship: displacement, origin, year^2 Negative
-relationship: cylinders, weight, year Origin and year are significantly
-different from 0 <span class="math inline">\(R^2 = 0.8273\)</span></p>
+<p>Positive relationship: displacement, origin, year^2 <br /> Negative
+relationship: cylinders, weight, year <br /> Weight, origin, year, and
+year squared are significantly different from 0 <span class="math inline">\(R^2 = 0.8273\)</span></p>
 </div>
 <div id="b" class="section level4">
 <h4>1(b)</h4>
@@ -528,8 +528,8 @@ summary(fit_4)</code></pre>
 ## (Intercept)  1.670278673 2.590721
 ## x1           0.008213776 2.870897
 ## x2          -1.240451256 3.259800</code></pre>
-<p>The parameter estimates for x1 and x2 are 1.4396 and 1.0097. The two
-coefficients are both significantly different from 0</p>
+<p>The parameter estimates for x1 and x2 are 1.4396 and 1.0097. Only x1
+is significant at an <span class="math inline">\(\alpha=0.05\)</span></p>
 <p>Both true parameters are covered by the confidence intervals of the
 slope estimates.</p>
 </div>
@@ -597,7 +597,10 @@ is not covered by the confidence interval however.</p>
 <h4>2(f)</h4>
 <p>Yes, in 2c both confidence intervals are covering the true values.
 The betas are also both significant. However, in 2e we found that <span class="math inline">\(\beta_2\)</span> alone is not significant. This is
-weird because in one model it is and one model it isn’t.</p>
+weird because in one model it is and one model it isn’t. Normally, one
+would expect a significant independent variable to stay significant no
+matter what other variables are present in the model or not. This is
+unless there is multicollinearity.</p>
 </div>
 <div id="a-2" class="section level4">
 <h4>3(a)</h4>
@@ -702,7 +705,7 @@ vif(fit_3d)</code></pre>
 </div>
 <div id="a-3" class="section level4">
 <h4>4(a)</h4>
-<p>This equation represents a fork.</p>
+<p>This equation represents a collider.</p>
 </div>
 <div id="b-3" class="section level4">
 <h4>4(b)</h4>
@@ -800,10 +803,10 @@ summary(fit_4d)</code></pre>
 </div>
 <div id="f-1" class="section level4">
 <h4>4(f)</h4>
-<p>The value of R^2 in the first model is 0.0008724, the value of R^2 in
-the second model is 0.8587. According to R^2, the second model is
-better. But this may not be the right model because the vif suggests
-there are high multicollinearity.</p>
+<p>The value of R^2 in the first model is 0.635, the value of R^2 in the
+second model is 0.964. According to R^2, the second model is better. But
+this may not be the right model because the vif suggests there are high
+multicollinearity.</p>
 </div>
 <div id="a-4" class="section level4">
 <h4>5(a)</h4>

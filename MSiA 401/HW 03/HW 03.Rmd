@@ -19,9 +19,9 @@ fit_1 = lm(mpg ~ cylinders + displacement +
 summary(fit_1)
 ```
 
-Positive relationship: displacement, origin, year^2
-Negative relationship: cylinders, weight, year
-Origin and year are significantly different from 0
+Positive relationship: displacement, origin, year^2 <br />
+Negative relationship: cylinders, weight, year <br />
+Weight, origin, year, and year squared are significantly different from 0
 $R^2 = 0.8273$
 
 #### 1(b)
@@ -87,7 +87,7 @@ summary(fit_4)
 confint(fit_4)
 ```
 
-The parameter estimates for x1 and x2 are 1.4396 and 1.0097. The two coefficients are both significantly different from 0
+The parameter estimates for x1 and x2 are 1.4396 and 1.0097. Only x1 is significant at an $\alpha=0.05$
 
 Both true parameters are covered by the confidence intervals of the slope estimates. 
 
@@ -113,7 +113,7 @@ $\beta_2$ is significantly different than 0. The true $\beta_2$ is not covered b
 
 #### 2(f)
 
-Yes, in 2c both confidence intervals are covering the true values. The betas are also both significant. However, in 2e we found that $\beta_2$ alone is not significant. This is weird because in one model it is and one model it isn't.
+Yes, in 2c both confidence intervals are covering the true values. The betas are also both significant. However, in 2e we found that $\beta_2$ alone is not significant. This is weird because in one model it is and one model it isn't. Normally, one would expect a significant independent variable to stay significant no matter what other variables are present in the model or not. This is unless there is multicollinearity. 
 
 #### 3(a)
 
@@ -167,7 +167,7 @@ The vif for x and w is 2.740063.
 
 #### 4(a)
 
-This equation represents a fork.
+This equation represents a collider.
 
 #### 4(b)
 
@@ -218,7 +218,7 @@ vif(fit_4d)
 
 #### 4(f)
 
-The value of R^2 in the first model is 0.0008724, the value of R^2 in the second model is 0.8587. According to R^2, the second model is better. But this may not be the right model because the vif suggests there are high multicollinearity.
+The value of R^2 in the first model is 0.635, the value of R^2 in the second model is 0.964. According to R^2, the second model is better. But this may not be the right model because the vif suggests there are high multicollinearity.
 
 #### 5(a)
 
