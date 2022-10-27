@@ -1,0 +1,60 @@
+---
+title: "Exam 1"
+author: "Sam"
+date: "2022-10-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# SVM
+
+```{r}
+# svm
+library(e1071)
+
+# Train
+svm = svm(factor(admit)~gre+gpa, kernel = "linear", data=train[1:10, ], scale=TRUE) 
+summary(svm)
+```
+
+# Performance Metric
+
+Accuracy
+
+Precision
+
+Recall
+
+F1
+
+# Markov Chain
+
+```{r}
+library(markovchain)
+tm <- rbind(c(0.20, 0.25, 0.25, 0.3), c(0.2, 0.25, 0.25, 0.3), c(0.20, 0.25, 0.25, 0.3), c(0.20, 0.25, 0.25, 0.3))
+states <- c("a", "b", "c", "d")
+mc <- new("markovchain", states=states, transitionMatrix=tm, name="X")
+
+tm[tm<0.4] <- 0
+dimnames(tm) <- list(states, states)
+mc@transitionMatrix <- tm
+
+plot(mc)
+```
+
+# Data standardization
+
+#### Standardization (Standardize data to z scores)
+
+$$
+\frac{(x_i-\mu)}{\sigma} = z-score
+$$
+
+#### Normalization (Normalize Data Between 0 and Q)
+
+$$
+\frac{(x_i-min(x))}{(max(x)-min(x))}*Q = Normalization
+$$

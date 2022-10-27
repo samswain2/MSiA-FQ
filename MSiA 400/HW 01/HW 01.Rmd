@@ -1,0 +1,89 @@
+---
+title: "Exam 1"
+author: "Sam"
+date: "2022-10-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+```{r}
+df_1 = read.table("webtraffic.txt", header = TRUE)
+```
+
+#### 1(A)
+
+```{r}
+df_1 = read.table("webtraffic.txt", header = TRUE)
+# Create count matrix
+df_1 <- colSums(df_1)
+Traffic <- matrix(data = 0, nrow = 9, ncol = 9)
+Traffic[9, 1] <- 1000
+k = 1
+for (i in 1:8) {
+  for (j in 1:9) {
+    Traffic[i, j] <- df_1[k]
+    k = k + 1
+  }
+}
+
+# Create probability matrix
+Traffic_probability <- t(apply(Traffic ,1 , function(x) x/sum(x)))
+Traffic
+```
+
+#### 1(B)
+
+```{r}
+set.seed(6)
+library(markovchain)
+
+states <- c("1", "2", "3", "4", "5", "6", "7", "8", "9")
+
+mc <- new("markovchain", states=states, transitionMatrix=Traffic_probability)
+
+dimnames(Traffic_probability) <- list(states, states)
+mc@transitionMatrix <- Traffic_probability
+
+par(mar=c(0.1 ,0.1 ,0.1 ,0.1))
+
+plot(mc, edge.arrow.size=0.5, 
+     vertex.size = 25, 
+     edge.label.cex = 0.0001)
+```
+
+#### 1(C)
+
+```{r}
+Traffic_probability
+```
+
+#### 1(D)
+
+The probability of a visitor being on Page 5 after 5 clicks is `r Traffic_probability[5, 5]`
+
+#### 1(E)
+
+```{r}
+Traffic_probability[9, 1] = 1; Traffic_probability[9, 9] = 0
+Q=t(Traffic_probability) - diag(9)
+Q[9,] = rep(1, 9)
+rhs = c(rep(0, 8), 1)
+Pi = solve(Q,rhs)
+print(Pi)
+```
+
+#### 1(F)
+
+```{r}
+B=Traffic_probability[1:8,1:8]
+Q=diag(8)-B
+rhs=c(0.1, 2, 3, 5, 5, 3, 3, 2)
+m=solve(Q,rhs)
+```
+
+The average time a visitor spends on the website until he/she first leaves is `r m[1]` minutes.
