@@ -417,7 +417,7 @@ mc &lt;- new(&quot;markovchain&quot;, states=states, transitionMatrix=Traffic_pr
 dimnames(Traffic_probability) &lt;- list(states, states)
 mc@transitionMatrix &lt;- Traffic_probability
 
-par(mar=c(0.1 ,0.1 ,0.1 ,0.1))
+par(mar=c(0.1 ,0.1 , 0.1, 0.1))
 
 plot(mc, edge.arrow.size=0.5, 
      vertex.size = 25, 
@@ -474,6 +474,75 @@ rhs=c(0.1, 2, 3, 5, 5, 3, 3, 2)
 m=solve(Q,rhs)</code></pre>
 <p>The average time a visitor spends on the website until he/she first
 leaves is 14.563 minutes.</p>
+</div>
+</div>
+<div id="question-2" class="section level1">
+<h1>Question 2</h1>
+<div id="a-1" class="section level4">
+<h4>2(A)</h4>
+<p><span class="math display">\[
+n \ge \frac{var[p(x)]}{(tolerance)^2\delta} =
+\frac{\frac{1}{\lambda^2}}{(10^{-3})^2*0.01}
+\\
+n \ge \frac{10^8}{\lambda^2}
+\]</span></p>
+</div>
+<div id="b-1" class="section level4">
+<h4>2(B)</h4>
+</div>
+<div id="lambda-1" class="section level4">
+<h4>Lambda = 1</h4>
+<pre class="r"><code>lambda = 1
+
+n = 10^8/lambda^2
+x = runif(n, 0, 1)
+y = -log(x)/lambda
+g = sin(y)/lambda
+result = sum(g)/n
+result_real = 1 / (1+lambda^2)
+print(result)</code></pre>
+<pre><code>## [1] 0.5000116</code></pre>
+<pre class="r"><code>print(result_real)</code></pre>
+<pre><code>## [1] 0.5</code></pre>
+<p>Using MCMC, we get a value of 0.5000116. This is different from the
+real result, 0.5 by 1.1574817^{-5}. Therefore it is within the
+tolerance.</p>
+</div>
+<div id="lambda-2" class="section level4">
+<h4>Lambda = 2</h4>
+<pre class="r"><code>lambda = 2
+
+n = 10^8/lambda^2
+x = runif(n, 0, 1)
+y = -log(x)/lambda
+g = sin(y)/lambda
+result = sum(g)/n
+result_real = 1 / (1+lambda^2)
+print(result)</code></pre>
+<pre><code>## [1] 0.2000093</code></pre>
+<pre class="r"><code>print(result_real)</code></pre>
+<pre><code>## [1] 0.2</code></pre>
+<p>Using MCMC, we get a value of 0.2000093. This is different from the
+real result, 0.2 by 9.2558051^{-6}. Therefore it is within the
+tolerance.</p>
+</div>
+<div id="lambda-4" class="section level4">
+<h4>Lambda = 4</h4>
+<pre class="r"><code>lambda = 4
+
+n = 10^8/lambda^2
+x = runif(n, 0, 1)
+y = -log(x)/lambda
+g = sin(y)/lambda
+result = sum(g)/n
+result_real = 1 / (1+lambda^2)
+print(result)</code></pre>
+<pre><code>## [1] 0.0588085</code></pre>
+<pre class="r"><code>print(result_real)</code></pre>
+<pre><code>## [1] 0.05882353</code></pre>
+<p>Using MCMC, we get a value of 0.0588085. This is different from the
+real result, 0.0588235 by 1.5026272^{-5}. Therefore it is within the
+tolerance.</p>
 </div>
 </div>
 

@@ -49,7 +49,7 @@ mc <- new("markovchain", states=states, transitionMatrix=Traffic_probability)
 dimnames(Traffic_probability) <- list(states, states)
 mc@transitionMatrix <- Traffic_probability
 
-par(mar=c(0.1 ,0.1 ,0.1 ,0.1))
+par(mar=c(0.1 ,0.1 , 0.1, 0.1))
 
 plot(mc, edge.arrow.size=0.5, 
      vertex.size = 25, 
@@ -87,3 +87,66 @@ m=solve(Q,rhs)
 ```
 
 The average time a visitor spends on the website until he/she first leaves is `r m[1]` minutes.
+
+# Question 2
+
+#### 2(A)
+
+$$
+n \ge \frac{var[p(x)]}{(tolerance)^2\delta} = \frac{\frac{1}{\lambda^2}}{(10^{-3})^2*0.01}
+\\
+n \ge \frac{10^8}{\lambda^2}
+$$
+
+#### 2(B)
+
+#### Lambda = 1
+
+```{r}
+lambda = 1
+
+n = 10^8/lambda^2
+x = runif(n, 0, 1)
+y = -log(x)/lambda
+g = sin(y)/lambda
+result = sum(g)/n
+result_real = 1 / (1+lambda^2)
+print(result)
+print(result_real)
+```
+
+Using MCMC, we get a value of `r result`. This is different from the real result, `r result_real` by `r abs(result-result_real)`. Therefore it is within the tolerance.
+
+#### Lambda = 2
+
+```{r}
+lambda = 2
+
+n = 10^8/lambda^2
+x = runif(n, 0, 1)
+y = -log(x)/lambda
+g = sin(y)/lambda
+result = sum(g)/n
+result_real = 1 / (1+lambda^2)
+print(result)
+print(result_real)
+```
+
+Using MCMC, we get a value of `r result`. This is different from the real result, `r result_real` by `r abs(result-result_real)`. Therefore it is within the tolerance.
+
+#### Lambda = 4
+
+```{r}
+lambda = 4
+
+n = 10^8/lambda^2
+x = runif(n, 0, 1)
+y = -log(x)/lambda
+g = sin(y)/lambda
+result = sum(g)/n
+result_real = 1 / (1+lambda^2)
+print(result)
+print(result_real)
+```
+
+Using MCMC, we get a value of `r result`. This is different from the real result, `r result_real` by `r abs(result-result_real)`. Therefore it is within the tolerance.
