@@ -100,56 +100,34 @@ $$
 
 ### 2(B)
 
-#### Lambda = 1
-
 ```{r}
-lambda = 1
+lambdas = c(1, 2, 4)
+results = c()
+results_real = c()
 
-n = 10^8/lambda^2
-x = runif(n, 0, 1)
-y = -log(x)/lambda
-g = sin(y)/lambda
-result = sum(g)/n
-result_real = 1 / (1+lambda^2)
-print(result)
-print(result_real)
+for (i in lambdas){
+  
+  n = 10^8/i^2
+  x = runif(n, 0, 1)
+  y = -log(x)/i
+  g = sin(y)/i
+  
+  results = append(results, sum(g)/n)
+  results_real = append(results_real, (1 / (1+i^2)))
+}
 ```
 
-Using MCMC, we get a value of `r result`. This is different from the real result, `r result_real` by `r abs(result-result_real)`. Therefore it is within the tolerance.
+#### Lambda = 1
+
+Using MCMC, we get a value of `r results[1]`. This is different from the real result, `r results_real[1]` by `r abs(results[1]-results_real[1])`. Therefore it is within the tolerance.
 
 #### Lambda = 2
 
-```{r}
-lambda = 2
-
-n = 10^8/lambda^2
-x = runif(n, 0, 1)
-y = -log(x)/lambda
-g = sin(y)/lambda
-result = sum(g)/n
-result_real = 1 / (1+lambda^2)
-print(result)
-print(result_real)
-```
-
-Using MCMC, we get a value of `r result`. This is different from the real result, `r result_real` by `r abs(result-result_real)`. Therefore it is within the tolerance.
+Using MCMC, we get a value of `r results[2]`. This is different from the real result, `r results_real[2]` by `r abs(results[2]-results_real[2])`. Therefore it is within the tolerance.
 
 #### Lambda = 4
 
-```{r}
-lambda = 4
-
-n = 10^8/lambda^2
-x = runif(n, 0, 1)
-y = -log(x)/lambda
-g = sin(y)/lambda
-result = sum(g)/n
-result_real = 1 / (1+lambda^2)
-print(result)
-print(result_real)
-```
-
-Using MCMC, we get a value of `r result`. This is different from the real result, `r result_real` by `r abs(result-result_real)`. Therefore it is within the tolerance.
+Using MCMC, we get a value of `r results[3]`. This is different from the real result, `r results_real[3]` by `r abs(results[3]-results_real[3])`. Therefore it is within the tolerance.
 
 # Question 3
 
@@ -161,7 +139,7 @@ We can't use Metropolis Sampling because a gamma distribution is not symmetrical
 
 ```{r}
 x = 1
-n = 200000
+n = 205000
 storage = rep(0, n)
 
 for (i in 1:n) {
@@ -186,7 +164,8 @@ for (i in 1:n) {
 
 ```{r}
 remove_burnin_storage = storage[5001:n]
-storage_sampled = remove_burnin_storage[seq(1, n, 1000)]
+storage_sampled = remove_burnin_storage[seq(1, n, 2000)]
+storage_sampled = storage_sampled[!is.na(storage_sampled)]
 ```
 
 ### 3(C)
