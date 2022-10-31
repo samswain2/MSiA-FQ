@@ -1,0 +1,33 @@
+package hw04;
+import java.util.Scanner;
+
+public class Currency_convertor {
+	
+	public static boolean isNumeric(String strNum) {
+	    if (strNum == null) {
+	        return false;
+	    }
+	    try {
+	        double d = Double.parseDouble(strNum);
+	    } catch (NumberFormatException nfe) {
+	        return false;
+	    }
+	    return true;
+	}
+	
+	public static void main(String[] args) {
+		
+		Scanner user_input = new Scanner(System.in);
+		System.out.println("Hello, please enter the price for one dollar in Japanese yen...");
+		
+		String userName = user_input.nextLine();
+		user_input.close();
+		System.out.println(userName);
+		
+		try {
+	        double d = Double.parseDouble(userName);
+	    } catch (NumberFormatException nfe) {
+	        System.out.println("Please input a number to convert");
+		
+	}
+}

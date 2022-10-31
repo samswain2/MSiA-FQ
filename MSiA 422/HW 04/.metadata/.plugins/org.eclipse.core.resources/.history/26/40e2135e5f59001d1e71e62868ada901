@@ -1,0 +1,45 @@
+package hw04;
+import java.util.Scanner;
+
+public class Currency_convertor {
+	
+	public static void main(String[] args) {
+		
+		Scanner user_input = new Scanner(System.in);
+		System.out.println("Hello, please enter the price for one dollar in Japanese yen...");
+		
+		String userName = user_input.nextLine();
+		user_input.close();
+		System.out.println(userName);
+		
+		double d = 0;
+		
+		try {
+	        d = Double.parseDouble(userName);
+	    } catch (NumberFormatException nfe) {
+	        System.out.println("Please input a number to convert...");
+	    }
+		
+		System.out.println(String.valueOf(d));
+		
+		Scanner switch_to = new Scanner(System.in);
+		
+		System.out.println("Please select an option from the menu:");
+		System.out.println("1: Convert USD ($) to Yen (¥)");
+		System.out.println("2: Convert Yen (¥) to USD ($)");
+		
+		String menu_option = switch_to.nextLine();
+		switch_to.close();
+		
+		if (menu_option == "1") {
+			System.out.println(menu_option);
+		} else if (menu_option == "2"){
+			System.out.println(menu_option);
+		} else {
+			System.out.println("Please ");
+			return 0;
+		}
+		
+		
+	}
+}

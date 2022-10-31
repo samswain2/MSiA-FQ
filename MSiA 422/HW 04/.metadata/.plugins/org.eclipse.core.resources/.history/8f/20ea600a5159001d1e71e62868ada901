@@ -1,0 +1,11 @@
+package hw04;
+
+public class Currency_convertor {
+	public static void main(String[] args) {
+		
+		int x = 4;
+		System.out.println("Hello, please enter the price for one dollar in Japanese yen.");
+		System.out.println("Hello World" + " " + Integer.toString(x));
+		
+	}
+}

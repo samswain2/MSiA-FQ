@@ -1,0 +1,7 @@
+package hw04;
+
+public class Currency_convertor {
+	public static void main(String[] args) {
+		System.out.println("Hello World");
+	}
+}

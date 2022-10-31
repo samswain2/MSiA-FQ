@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+C:\Users\Sam\Desktop\NW Work\MSiA 422\HW 04\.metadata\.plugins\org.eclipse.jdt.core
+2523484977.index
+1780463272.index
+1865797976.index

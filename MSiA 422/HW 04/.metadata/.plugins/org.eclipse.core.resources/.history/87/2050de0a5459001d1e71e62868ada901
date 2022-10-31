@@ -1,0 +1,14 @@
+package hw04;
+import java.util.Scanner;
+
+public class Currency_convertor {
+	public static void main(String[] args) {
+		
+		Scanner userName = new Scanner(System.in);
+		System.out.println("Hello, please enter the price for one dollar in Japanese yen...");
+		
+		String userName = userName.nextLine();
+		System.out.println(userName);
+		
+	}
+}
