@@ -1,7 +1,7 @@
 ---
-title: "Exam 1"
-author: "Sam"
-date: "2022-10-27"
+title: "Lab Assignment 01"
+author: "Sam Swain"
+date: "2022-10-30"
 output: html_document
 ---
 
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 df_1 = read.table("webtraffic.txt", header = TRUE)
 ```
 
-#### 1(A)
+### 1(A)
 
 ```{r}
 df_1 = read.table("webtraffic.txt", header = TRUE)
@@ -36,7 +36,7 @@ Traffic_probability <- t(apply(Traffic ,1 , function(x) x/sum(x)))
 Traffic
 ```
 
-#### 1(B)
+### 1(B)
 
 ```{r}
 set.seed(6)
@@ -56,17 +56,17 @@ plot(mc, edge.arrow.size=0.5,
      edge.label.cex = 0.0001)
 ```
 
-#### 1(C)
+### 1(C)
 
 ```{r}
 Traffic_probability
 ```
 
-#### 1(D)
+### 1(D)
 
 The probability of a visitor being on Page 5 after 5 clicks is `r Traffic_probability[5, 5]`
 
-#### 1(E)
+### 1(E)
 
 ```{r}
 Traffic_probability[9, 1] = 1; Traffic_probability[9, 9] = 0
@@ -77,7 +77,7 @@ Pi = solve(Q,rhs)
 print(Pi)
 ```
 
-#### 1(F)
+### 1(F)
 
 ```{r}
 B=Traffic_probability[1:8,1:8]
@@ -90,15 +90,15 @@ The average time a visitor spends on the website until he/she first leaves is `r
 
 # Question 2
 
-#### 2(A)
+### 2(A)
 
 $$
 n \ge \frac{var[p(x)]}{(tolerance)^2\delta} = \frac{\frac{1}{\lambda^2}}{(10^{-3})^2*0.01}
-\\
+\ \therefore \ 
 n \ge \frac{10^8}{\lambda^2}
 $$
 
-#### 2(B)
+### 2(B)
 
 #### Lambda = 1
 
@@ -150,3 +150,53 @@ print(result_real)
 ```
 
 Using MCMC, we get a value of `r result`. This is different from the real result, `r result_real` by `r abs(result-result_real)`. Therefore it is within the tolerance.
+
+# Question 3
+
+### 3(A)
+
+We can't use Metropolis Sampling because a gamma distribution is not symmetrical. Since gamma distributions aren't join distributions, we can't use Gibbs Sampling either. Therefore, we are left with Metropolis-Hastings Algorithm.
+
+### 3(B)
+
+```{r}
+x = 1
+n = 200000
+storage = rep(0, n)
+
+for (i in 1:n) {
+  
+  x_prime = rchisq(1, x)
+  
+  r_top = dchisq(x, x_prime) * dgamma(x = x_prime, shape = 2, scale = 2)
+  r_bottom = dchisq(x, x) * dgamma(x = x, shape = 2, scale = 2)
+    
+  a = r_top/r_bottom
+  
+  u = runif(1, min = 0, max = 1)
+  
+  if (u <= a) {
+    x = x_prime
+  }
+  
+  storage[i] = x
+
+}
+```
+
+```{r}
+remove_burnin_storage = storage[5001:n]
+storage_sampled = remove_burnin_storage[seq(1, n, 1000)]
+```
+
+### 3(C)
+
+As we can see from the scatter plot below, the data seems to be random. Looking further into a time series plot, we can see there is no apparent correlation between concurrent observations.
+
+```{r}
+plot(storage_sampled)
+```
+
+```{r}
+plot(ts(storage_sampled))
+```
