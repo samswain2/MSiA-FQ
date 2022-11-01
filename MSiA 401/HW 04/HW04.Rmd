@@ -1,0 +1,135 @@
+---
+title: "HW 04"
+author: "Sam"
+date: "2022-10-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 3
+
+
+#### Load in data
+```{r}
+dat = data.frame(type=c(rep("A",9), rep("B",9), rep("C",9)),
+temp=rep(c(100,125,150), 9),
+y=c(580,1090,1392,568,1087,1380,570,1085,1386,550,1070,1328,530,1035,1312,
+579,1000,1299,546,1045,867,575,1053,904,599,1066,889))
+```
+
+### 3(a)
+
+```{r}
+interaction.plot(x.factor = dat$temp, 
+                 trace.factor = dat$type, 
+                 response = dat$y, xlab = "Temperature")
+```
+
+### 3(b)
+
+```{r}
+fit_3b = lm(y ~ temp*type, data = dat)
+summary(fit_3b)
+```
+
+### 3(c)
+
+```{r}
+summary_3c = summary(fit_3b)
+summary_3c
+```
+
+$$
+H_0: \beta_{temp} = \beta_{typeB} = \beta_{typeC} = \beta_{temp*typeB} = \beta_{temp*typeC} = 0
+\\
+H_1:At \ least \ one \ of \ \beta_{temp} = \beta_{typeB} = \beta_{typeC} = \beta_{temp*typeB} = \beta_{temp*typeC} \ne 0
+$$
+
+Since the overall p-value of the model is much less than 0.05, we can reject the null and conclude that at least one of the $\beta's \ne 0$.
+
+### 3(d)
+
+```{r}
+summary(fit_3b)
+print("------------------------------------------------------")
+fit_3d = aov(y ~ type*temp, data = dat)
+summary(fit_3d)
+```
+
+$$
+H_0: \beta_{type*temp} = 0
+\\
+H_1: \beta_{type*temp} \ne 0
+$$
+
+Since the overall p-value of the model is much less than 0.05, we can reject the null and conclude that $\beta_{type*temp} \ne 0$.
+
+### 3(e)
+
+We can see from 3(d), the temp is greatly effected when typeC is present. When type B is present there is little to no effect on the light output. We can also see from the interaction plot that light output takes a sharp turn down when type C face plate being used. The line continues upwards when type A or B are being used. In conclusion, we can see face plate C is causing something significant to happen and the light output to be lessened at higher temperatures.
+
+### 3(f)
+
+Since we only have three different temperatures in this data set, it could be appropriate. However, if we want to measure different temperatures and have more data on different temps, we should treat it as a continuous variable. After all, temperature is continuous by nature.
+
+# Question 4
+
+#### Read data
+```{r}
+df = read.csv("bike.csv")
+df = subset(df, select = -c(1, 46))
+all_names = colnames(df)
+```
+
+#### EDA
+```{r}
+library(MASS)
+library(car)
+
+full.model <- lm(trips ~ ., data = df)
+step.model <- stepAIC(full.model, 
+                      direction = "both", 
+                      trace = FALSE)
+summary(step.model)
+
+#vif(step.model)
+sig_features = c('PARK_AREA_ACRES', 'CTA_TRAIN_STATIONS',
+                 'Retail_Food_Establishment', 'CAPACITY', 
+                 'POPULATION_SQ_MILE', 'CBD', 'MINORITY',
+                 'EDU', 'ARSON', 'ASSAULT', 'BATTERY', 
+                 'CRIMINAL_DAMAGE', 'GAMBLING', 'NON_CRIMINAL',
+                 'OBSCENITY', 'OTHER_OFFENSE', 'PROSTITUTION',
+                 'STALKING', 'THEFT', 'trips')
+
+df_selected = df[sig_features]
+
+vif(step.model)
+
+#round(cor(df_selected), 2)
+round(cor(df), 2)
+```
+
+```{r}
+round(cor(df), 2)
+all_names
+```
+
+```{r}
+#full_model = lm(trips ~ (.)^2, data = df)
+full_model = lm(trips ~ PARK_AREA_ACRES + CAPACITY + CTA_TRAIN_STATIONS + MINORITY + ARSON + ASSAULT*BATTERY + CONCEALED_CARRY_LICENSE_VIOLATIO + HOMICIDE + STALKING, data = df)
+
+summary(full_model)
+```
+
+```{r}
+keep = c('PARK_AREA_ACRES', 'CAPACITY', 'MINORITY', 'ARSON', 'CRIMINAL_DAMAGE', 'PROSTITUTION', 'STALKING', 'trips')
+df_keep = df_selected[keep]
+keep.model = lm(trips ~ ., data = df_keep)
+summary(keep.model)
+
+vif(keep.model)
+cor(df_keep)
+```
