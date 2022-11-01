@@ -77,14 +77,24 @@ Since we only have three different temperatures in this data set, it could be ap
 
 # Question 4
 
-#### Read data
+### Read data
 ```{r}
 df = read.csv("bike.csv")
 df = subset(df, select = -c(1, 46))
 all_names = colnames(df)
 ```
 
-#### EDA
+### Get model
+
+#### Explainable model
+```{r}
+hand_reduced_model = lm(trips ~ PARK_AREA_ACRES + CAPACITY + CTA_TRAIN_STATIONS + MINORITY + ARSON + ASSAULT*BATTERY + CONCEALED_CARRY_LICENSE_VIOLATIO + HOMICIDE + STALKING, data = df)
+
+summary(hand_reduced_model)
+vif(hand_reduced_model, type = 'predictor')
+```
+
+#### Uninterpretable model
 ```{r}
 library(MASS)
 library(car)
@@ -93,9 +103,7 @@ full.model <- lm(trips ~ ., data = df)
 step.model <- stepAIC(full.model, 
                       direction = "both", 
                       trace = FALSE)
-summary(step.model)
 
-#vif(step.model)
 sig_features = c('PARK_AREA_ACRES', 'CTA_TRAIN_STATIONS',
                  'Retail_Food_Establishment', 'CAPACITY', 
                  'POPULATION_SQ_MILE', 'CBD', 'MINORITY',
@@ -106,30 +114,12 @@ sig_features = c('PARK_AREA_ACRES', 'CTA_TRAIN_STATIONS',
 
 df_selected = df[sig_features]
 
-vif(step.model)
+aic_model = lm(trips ~ (.)^2, df_selected)
 
-#round(cor(df_selected), 2)
-round(cor(df), 2)
-```
+aic_step_model <- stepAIC(aic_model, 
+                      direction = "both", 
+                      trace = FALSE)
 
-```{r}
-round(cor(df), 2)
-all_names
-```
-
-```{r}
-#full_model = lm(trips ~ (.)^2, data = df)
-full_model = lm(trips ~ PARK_AREA_ACRES + CAPACITY + CTA_TRAIN_STATIONS + MINORITY + ARSON + ASSAULT*BATTERY + CONCEALED_CARRY_LICENSE_VIOLATIO + HOMICIDE + STALKING, data = df)
-
-summary(full_model)
-```
-
-```{r}
-keep = c('PARK_AREA_ACRES', 'CAPACITY', 'MINORITY', 'ARSON', 'CRIMINAL_DAMAGE', 'PROSTITUTION', 'STALKING', 'trips')
-df_keep = df_selected[keep]
-keep.model = lm(trips ~ ., data = df_keep)
-summary(keep.model)
-
-vif(keep.model)
-cor(df_keep)
+summary(aic_step_model)
+vif(aic_step_model, type = 'predictor')
 ```
