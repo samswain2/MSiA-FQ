@@ -1,7 +1,7 @@
 ---
 title: "HW 04"
-author: "Sam"
-date: "2022-10-31"
+author: "Group 10"
+date: "2022-11-02"
 output: html_document
 ---
 
@@ -25,13 +25,13 @@ y=c(580,1090,1392,568,1087,1380,570,1085,1386,550,1070,1328,530,1035,1312,
 ```{r}
 interaction.plot(x.factor = dat$temp, 
                  trace.factor = dat$type, 
-                 response = dat$y, xlab = "Temperature")
+                 response = dat$y, xlab = "Temperature", ylab = "Light Output")
 ```
 
 ### 3(b)
 
 ```{r}
-fit_3b = lm(y ~ temp*type, data = dat)
+fit_3b = lm(y ~ as.factor(temp)*type, data = dat)
 summary(fit_3b)
 ```
 
@@ -43,9 +43,9 @@ summary_3c
 ```
 
 $$
-H_0: \beta_{temp} = \beta_{typeB} = \beta_{typeC} = \beta_{temp*typeB} = \beta_{temp*typeC} = 0
+H_0: \beta_{\ temperatures} = \beta_{\ types} = \beta_{\ temperatures \ * \ types} = 0
 \\
-H_1:At \ least \ one \ of \ \beta_{temp} = \beta_{typeB} = \beta_{typeC} = \beta_{temp*typeB} = \beta_{temp*typeC} \ne 0
+H_1:At \ least \ one \ of \ \beta_{\ temperatures} = \beta_{\ types} = \beta_{temperatures \ * \ types} \ne 0
 $$
 
 Since the overall p-value of the model is much less than 0.05, we can reject the null and conclude that at least one of the $\beta's \ne 0$.
@@ -55,17 +55,17 @@ Since the overall p-value of the model is much less than 0.05, we can reject the
 ```{r}
 summary(fit_3b)
 print("------------------------------------------------------")
-fit_3d = aov(y ~ type*temp, data = dat)
+fit_3d = aov(y ~ as.factor(temp)*type, data = dat)
 summary(fit_3d)
 ```
 
 $$
-H_0: \beta_{type*temp} = 0
+H_0: \beta_{temperatures \ * \ types} = 0
 \\
-H_1: \beta_{type*temp} \ne 0
+H_1: \beta_{temperatures \ * \ types} \ne 0
 $$
 
-Since the overall p-value of the model is much less than 0.05, we can reject the null and conclude that $\beta_{type*temp} \ne 0$.
+Since the overall p-value of the model is much less than 0.05, we can reject the null and conclude that $\beta_{temperatures \ * \ types} \ne 0$.
 
 ### 3(e)
 
@@ -73,53 +73,63 @@ We can see from 3(d), the temp is greatly effected when typeC is present. When t
 
 ### 3(f)
 
-Since we only have three different temperatures in this data set, it could be appropriate. However, if we want to measure different temperatures and have more data on different temps, we should treat it as a continuous variable. After all, temperature is continuous by nature.
+Since we only have three different temperatures in this data set, it is not appropriate to have it as numerical. It would only be appropriate if we had a more continuous looking temperature column.
 
 # Question 4
 
-### Read data
+### Read data, add features
 ```{r}
+library(MASS)
+library(car)
+
 df = read.csv("bike.csv")
 df = subset(df, select = -c(1, 46))
-all_names = colnames(df)
+
+normalize <- function(x) {
+return ((x - min(x)) / (max(x) - min(x)))
+}
+
+df$cbd_indicator = (normalize(df$Limited_Business_License) + 
+                      normalize(df$Retail_Food_Establishment) + 
+                      normalize(df$CTA_BUS_STATIONS) + 
+                      normalize(df$CTA_TRAIN_STATIONS) +
+                      normalize(df$POPULATION_SQ_MILE)) / 5
+
+df$effect_rides = (normalize(df$ARSON) + normalize(df$BURGLARY) + normalize(df$HOMICIDE)) / 3
 ```
 
 ### Get model
 
 #### Explainable model
 ```{r}
-hand_reduced_model = lm(trips ~ PARK_AREA_ACRES + CAPACITY + CTA_TRAIN_STATIONS + MINORITY + ARSON + ASSAULT*BATTERY + CONCEALED_CARRY_LICENSE_VIOLATIO + HOMICIDE + STALKING, data = df)
+hand_reduced_model = lm(trips ~ PARK_AREA_ACRES + CAPACITY + MINORITY + 
+                          cbd_indicator + effect_rides, data = df)
 
 summary(hand_reduced_model)
-vif(hand_reduced_model, type = 'predictor')
+print("-----------------------------------VIF----------------------------------------")
+vif(hand_reduced_model)
 ```
 
-#### Uninterpretable model
-```{r}
-library(MASS)
-library(car)
+### Conclusion (Explanation of model above)
 
-full.model <- lm(trips ~ ., data = df)
-step.model <- stepAIC(full.model, 
-                      direction = "both", 
-                      trace = FALSE)
+There are a few takeaways from the model above:
 
-sig_features = c('PARK_AREA_ACRES', 'CTA_TRAIN_STATIONS',
-                 'Retail_Food_Establishment', 'CAPACITY', 
-                 'POPULATION_SQ_MILE', 'CBD', 'MINORITY',
-                 'EDU', 'ARSON', 'ASSAULT', 'BATTERY', 
-                 'CRIMINAL_DAMAGE', 'GAMBLING', 'NON_CRIMINAL',
-                 'OBSCENITY', 'OTHER_OFFENSE', 'PROSTITUTION',
-                 'STALKING', 'THEFT', 'trips')
-
-df_selected = df[sig_features]
-
-aic_model = lm(trips ~ (.)^2, df_selected)
-
-aic_step_model <- stepAIC(aic_model, 
-                      direction = "both", 
-                      trace = FALSE)
-
-summary(aic_step_model)
-vif(aic_step_model, type = 'predictor')
-```
+The first take away is that densely populated areas generally have more diverse modes of transportation than more rural areas. I used to live in a very rural area, the only mode of transportation really was using a car. Moving to Evanston I see many people using other modes of transportation because everything is closer together. This is why I believe the following are significant:
+</br>
+</br>
+- Area of park in acres (PARK_AREA_ACRES): The more park areas a city has the less urban it is. Thinking about it, places with a lot of parks are generally not urban, and thus would not be practical for biking. For example, Chicago is a very urban city. It doesn't have very much park space other than near the bean. Since everything is closer together, it is a perfect city to rent a bike in.
+</br>
+</br>
+- Capacity of bikes (CAPACITY): As you increase the number of bikes in a rack, this indicates that the company has data suggesting high demand in that area. Because they have this data, they have placed more bikes in that area. This is why larger capacity indicates more trips.
+</br>
+</br>
+- Central business indicator (cbd_indicator): A central business district is the business center of a city. Often referred to as downtown. For example, Downtown Chicago. $\beta_{\ CBD \ Indicator}$ is intuitive. If you are in a central business district, buildings are closer together and thus, more accessible through bikes and other smaller forms of transportation. This is why you see more trips in central business districts.
+</br>
+</br>
+The next variable that is significant is minority (MINORITY). Research shows that African Americans are more likely to commit crimes than non minority citizens. Since African Americans represent the largest minority group in the country, we can say the minority feature variable represents more African Americans than other races. This model shows that crime and minority are significant and negative. It makes sense that people wouldn't want to rent bikes where crime is happening as it is less safe because they are putting themselves at risk. This explains why the $\beta$ is negative. This also explains why the $\beta$ for minority is negative.
+</br>
+</br>
+The crimes included in my composite crime variable are arson, burglary, and homicide. These generally go together in a home invasion. Thinking about it, most of the crimes can happen anywhere. These crimes are more area specific. Some areas will have more break-ins than other, more secure areas. This break in will include the crimes in the composite variable. Areas where these crimes happen a lot will also be areas where minorities live.
+</br>
+</br>
+Crime and Minority are related. We aren't sure why this is. This could be an omitted variable. More research is needed to come to a solid conclusion.
