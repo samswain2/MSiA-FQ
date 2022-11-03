@@ -1,0 +1,75 @@
+package hw04;
+import java.util.Scanner;
+
+public class Currency_convertor {
+	
+	public static void main(String[] args) {
+		
+		converter_func();
+		
+	}
+	
+	static String converter_func() {
+		
+		Scanner user_input = new Scanner(System.in);
+		System.out.println("Hello, please enter the price for one dollar in Japanese yen...");
+		
+		String rate = user_input.nextLine();
+		
+		double d = -1;
+		
+		try {
+	        d = Double.parseDouble(rate);
+	    } catch (NumberFormatException nfe) {
+	    	String w = "Error: Please input a number (n >= 0) to convert...";
+	    	System.out.println(w);
+	    	user_input.close();
+	        return "";
+	    }
+		
+		Scanner switch_to = new Scanner(System.in);
+		
+		System.out.println("Please select an option from the menu:");
+		System.out.println("1: Convert USD ($) to Yen (¥)");
+		System.out.println("2: Convert Yen (¥) to USD ($)");
+		
+		String menu_option = switch_to.nextLine();
+		
+		Scanner amt = new Scanner(System.in);
+		
+		System.out.println("Please select an option from the menu:");
+		System.out.println("1: Convert USD ($) to Yen (¥)");
+		System.out.println("2: Convert Yen (¥) to USD ($)");
+		
+		String amt_value = amt.nextLine();
+		
+		double amt_double = -1;
+		
+		try {
+			amt_double = Double.parseDouble(amt_value);
+	    } catch (NumberFormatException nfe) {
+	    	String w = "Error: Please input a number (n >= 0) to convert...";
+	    	System.out.println(w);
+	    	user_input.close();
+			switch_to.close();
+			amt.close();
+	        return "";
+	    }
+		
+		user_input.close();
+		switch_to.close();
+		amt.close();
+		
+		if (menu_option == "1") {
+			d = d * 2;
+		} else if (menu_option == "2"){
+			d = d * 2;
+		} else {
+			String w = "Error: Please input a number from the menu above (1 or 2)...";
+			System.out.println(w);
+			return "";
+		}	
+		
+		return String.valueOf(d);
+	}
+}

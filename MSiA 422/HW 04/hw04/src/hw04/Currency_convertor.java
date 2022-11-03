@@ -15,36 +15,59 @@ public class Currency_convertor {
 		System.out.println("Hello, please enter the price for one dollar in Japanese yen...");
 		
 		String rate = user_input.nextLine();
-		user_input.close();
-		System.out.println(rate);
 		
 		double d = -1;
 		
 		try {
 	        d = Double.parseDouble(rate);
 	    } catch (NumberFormatException nfe) {
-	        return "Please input a number (n >= 0) to convert...";
+	    	String w = "Error: Please input a number for exchange rate...";
+	    	System.out.println(w);
+	    	user_input.close();
+	        return "";
 	    }
-		
-		System.out.println(String.valueOf(d));
-		
-		Scanner switch_to = new Scanner(System.in);
 		
 		System.out.println("Please select an option from the menu:");
 		System.out.println("1: Convert USD ($) to Yen (¥)");
 		System.out.println("2: Convert Yen (¥) to USD ($)");
 		
-		String menu_option = switch_to.nextLine();
-		switch_to.close();
+		String menu_option = user_input.nextLine();
 		
-		if (menu_option == "1") {
-			d = d * 2;
-		} else if (menu_option == "2"){
-			d = d * 2;
+		if (!menu_option.equals("1") && !menu_option.equals("2")) {
+			String w = "Error: Please input a number from the menu above (1 or 2)...";
+			System.out.println(w);
+			user_input.close();
+			return "";
+		} else {;}
+		
+		System.out.println("Please enter an amount to convert");
+		
+		String amt_value = user_input.nextLine();
+		
+		double amt_double = -1;
+		
+		try {
+			amt_double = Double.parseDouble(amt_value);
+	    } catch (NumberFormatException nfe) {
+	    	String r = "Error: Please input a valid currency amount to convert...";
+	    	System.out.println(r);
+	    	user_input.close();
+	        return "";
+	    }
+		
+		user_input.close();
+		
+		if (menu_option.equals( "1")) {
+			d = amt_double * d;
+		} else if (menu_option.equals( "2")){
+			d = amt_double / d;
 		} else {
+			String r = "Error: Please input a number from the menu above (1 or 2)...";
+			System.out.println(r);
 			return "";
 		}	
 		
-		return "String";
+		System.out.println(String.valueOf(d));
+		return String.valueOf(d);
 	}
 }
