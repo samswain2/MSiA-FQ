@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Sam/Desktop/NW Work/MSiA 413/HW 05/hw5.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="175"/><column_width id="3" width="7157"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,12:mainhw5_original"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">/*
+Create media_types table
+*/
+
+drop table if exists media_types;
+
+create table media_types (
+	mediaTypeId integer not null primary key autoincrement,
+	mediaName nvarchar(20) not null);
+	
+insert into media_types (mediaName)
+select distinct mediaType from hw5_original;
+
+/*
+Create genres table
+*/
+
+drop table if exists genres;
+
+create table genres (
+	genreId integer not null primary key autoincrement,
+	genreName nvarchar(32) not null);
+	
+insert into genres (genreName)
+select distinct Genre from hw5_original;
+
+/*
+Create artists table
+*/
+
+drop table if exists artists;
+
+create table artists (
+	artistId integer not null primary key autoincrement,
+	artistName nvarchar(64) not null);
+	
+insert into artists (artistName)
+select distinct artistName from hw5_original;
+
+/*
+Create albums table
+*/
+
+drop table if exists albums;
+
+create table albums (
+	albumId integer not null primary key autoincrement,
+	albumTitle nvarchar(64) not null,
+	artistId integer);
+	
+insert into albums (albumTitle, artistId)
+select distinct albumTitle, a.artistId
+from hw5_original h
+join artists a on h.artistName = a.artistName;
+
+/*
+Create tracks table
+*/
+
+drop table if exists tracks;
+
+create table tracks (
+	trackId integer not null primary key autoincrement,
+	trackName nvarchar(200),
+	composer nvarchar(200),
+	trackSizeBytes integer,
+	trackLength integer,
+	trackprice decimal(5, 3),
+	genreId integer,
+	mediaTypeId integer,
+	albumId integer);
+
+insert into tracks (trackName, composer, trackSizeBytes, 
+					trackLength, trackprice, genreId,
+					mediaTypeId, albumId)
+	select 
+	DISTINCT h.TrackName, 
+	h.Composer,
+	h.TrackSizeBytes,
+	h.trackLength,
+	h.trackprice,
+	g.genreId,
+	m.mediaTypeId,
+	a.albumId
+	from hw5_original h
+	join genres g on h.Genre = g.genreName
+	join media_types m on h.MediaType = m.mediaName
+	join albums a on h.albumTitle = a.albumTitle;
+
+/*
+Create customers table
+*/
+
+drop table if exists Customers;
+
+create table Customers (
+	customerID integer not null primary key autoincrement,
+	firstName nvarchar(64),
+	lastName nvarchar(64),
+	address nvarchar(256),
+	city nvarchar(64),
+	state nvarchar(64),
+	country nvarchar(64),
+	postalCode nvarchar(64),
+	phoneNumber nvarchar(64),
+	faxNumber nvarchar(64),
+	email nvarchar(128));	
+	
+insert into Customers (lastName, firstName, address,
+					   city, state, country, postalCode,
+					   phoneNumber, faxNumber,
+					   email)
+	select 
+	distinct CustomerLastName, 
+	CustomerFirstName,
+	CustomerAddress,
+	CustomerCity,
+	CustomerState,
+	CustomerCountry,
+	CustomerPostalCode,
+	CustomerPhone,
+	CustomerFax,
+	CustomerEmail
+	from hw5_original;
+
+/*
+Create Invoices table
+*/
+
+drop table if exists Invoices;
+
+create table Invoices (
+	InvoiceId integer not null primary key,
+	Date datetime,
+	billingAddress varchar(128),
+	billingCity varchar(128),
+	billingState varchar(64),
+	billingCountry varchar(64),
+	billingPostalCode varchar(32),
+	customerId integer);	
+	
+insert into Invoices (InvoiceId, Date, billingAddress, billingCity,
+					   billingState, billingCountry, 
+					   billingPostalCode, customerId)
+	select
+	h.InvoiceId,
+	h.InvoiceDate,
+	h.InvoiceBillingAddress,
+	h.InvoiceBillingCity,
+	h.InvoiceBillingState,
+	h.InvoiceBillingCountry,
+	h.InvoiceBillingPostalCode,
+	c.customerId
+	from hw5_original h
+	join Customers c on h.InvoiceBillingAddress = c.address
+	where InvoiceId not null
+	group by InvoiceId;
+	
+/*
+Create Invoice_items table
+*/
+
+drop table if exists Invoice_items;
+
+create table Invoice_items (
+	InvoiceId integer,
+	invoiceitem,
+	billingAddress varchar(128),
+	billingCity varchar(128),
+	billingState varchar(64),
+	billingCountry varchar(64),
+	billingPostalCode varchar(32),
+	customerId integer);	
+	
+insert into Invoice_items (InvoiceId, Date, billingAddress, billingCity,
+					   billingState, billingCountry, 
+					   billingPostalCode, customerId)
+	select
+	h.InvoiceId,
+	h.InvoiceDate,
+	h.InvoiceBillingAddress,
+	h.InvoiceBillingCity,
+	h.InvoiceBillingState,
+	h.InvoiceBillingCountry,
+	h.InvoiceBillingPostalCode,
+	c.customerId
+	from hw5_original h
+	join Customers c on h.InvoiceBillingAddress = c.address
+	where InvoiceId not null
+	group by InvoiceId;
+	
+select * from hw5_original</sql><current_tab id="0"/></tab_sql></sqlb_project>
