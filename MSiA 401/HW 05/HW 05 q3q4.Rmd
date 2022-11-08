@@ -1,0 +1,305 @@
+---
+title: "PA_HW5"
+author: "Group10"
+date: "2022-11-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Problem 3
+
+### 3(a)
+```{r}
+library(MASS)
+# dim(Boston)
+Boston$logcrim = log(Boston$crim) # create log transform of crim
+# summary(Boston)
+set.seed(12345)
+train = runif(nrow(Boston))<.5 # pick train/test split
+print("Frequency Distribution")
+table(train) # frequency distribution
+```
+
+### 3(b)
+```{r}
+fit1 = lm(logcrim ~ . - crim, data = Boston, subset=train) 
+# summary(fit1)
+p1 = predict(fit1, Boston[!train,])
+# MSE
+mse_test = mean((Boston$logcrim[!train] - p1)^2)
+mse_test
+# residual plot
+plot(fit1, which = 1, pch = 16, cex = .5)
+```
+The test set MSE is 0.7083435. From the residual plot,we learn that the variance are not very constant.
+
+### 3(c)
+```{r}
+fit2 = step(fit1, trace = F) 
+p2 = predict(fit2, Boston[!train,]) 
+mean((Boston$logcrim[!train] - p2)^2)
+```
+The test set MSE is 0.7033381.
+
+### 3(d)
+```{r}
+library('glmnet')
+# fit ridge 
+x = model.matrix(logcrim ~ . - crim -1,Boston) 
+fit_ridge = glmnet(x[train,], Boston$logcrim[train], alpha = 0) 
+ 
+# CV 
+set.seed(1234) 
+ridge_cv = cv.glmnet(x[train,], Boston$logcrim[train], alpha = 0) # find optimal lambda 
+l1 = ridge_cv$lambda.min 
+l1
+
+# test set mse 
+p3 = predict(fit_ridge, s=l1, newx=x[!train,])
+mean((Boston$logcrim[!train] - p3)^2) 
+```
+The test set MSE is 0.7767352.
+
+### 3(e)
+```{r}
+# fit lasso
+x = model.matrix(logcrim ~ . - crim -1,Boston) 
+fit_lasso = glmnet(x[train,], Boston$logcrim[train], alpha = 1) 
+ 
+# CV 
+set.seed(1234) 
+lasso_cv = cv.glmnet(x[train,], Boston$logcrim[train], alpha = 1) # find optimal lambda 
+l2 = lasso_cv$lambda.min
+l2
+
+# test set mse 
+p4 = predict(fit_lasso, s=l2, newx=x[!train,])
+mean((Boston$logcrim[!train] - p4)^2) 
+```
+The test set MSE is 0.7023993.
+
+### 3(f)
+```{r}
+# ridge model 
+x = model.matrix(logcrim ~zn 
+        +indus+I(indus^2) 
+        +chas 
+        +nox+I(nox^2) 
+        +rm+log(rm) 
+        +age+log(age) 
+        +dis+log(dis) 
+        +rad+log(rad) 
+        +tax+log(tax) 
+        +ptratio+log(ptratio) 
+        +black+log(black) 
+        +lstat+log(lstat) 
+        +medv+log(medv), Boston) 
+fit_r = glmnet(x[train,], Boston$logcrim[train], alpha=0) 
+ 
+fit_cv = cv.glmnet(x[train,], Boston$logcrim[train], alpha=0) 
+l_r = fit_cv$lambda.min 
+
+yhat = predict(fit_r, s=fit_cv$lambda.min, newx=x[!train,]) 
+mean((Boston$logcrim[!train] - yhat)^2)
+```
+
+```{r}
+# lasso model 
+fit_l = glmnet(x[train,], Boston$logcrim[train], alpha=1) 
+ 
+fit_cv2 = cv.glmnet(x[train,], Boston$logcrim[train], alpha=1) 
+l_l = fit_cv2$lambda.min 
+
+yhat2 = predict(fit_l, s=fit_cv2$lambda.min, newx=x[!train,]) 
+mean((Boston$logcrim[!train] - yhat2)^2)
+```
+```{r}
+# step-wise
+fit4= lm(logcrim ~ 1, Boston, subset=train)
+fit_s = step(fit4, scope=~zn 
+        +indus+I(indus^2) 
+        +chas 
+        +nox+I(nox^2) 
+        +rm+log(rm) 
+        +age+log(age) 
+        +dis+log(dis) 
+        +rad+log(rad) 
+        +tax+log(tax) 
+        +ptratio+log(ptratio) 
+        +black+log(black) 
+        +lstat+log(lstat) 
+        +medv+log(medv), trace = FALSE)
+yhat3 = predict(fit_s, Boston[!train,]) 
+mean((Boston$logcrim[!train] - yhat3)^2)
+```
+Log transformations and square transformations of predictors are important. Because these transformations help reduce MSE in all three models.
+
+# Problem 4
+
+### 4(a)
+```{r}
+sigma = matrix(0.9, nrow=4, ncol=4) + .1*diag(4)
+A = chol(sigma)
+t(A) %*% A
+```
+
+### 4(b)
+```{r}
+Z = matrix(rnorm(4000), nrow=1000)
+X = Z %*% A
+var(X)
+```
+It approximately equal $ \Sigma $.
+
+### 4(c)
+```{r}
+set.seed(12345)
+# generate a new Z, A and X
+n = 10100
+ntrain=100
+ntest=n-ntrain
+Z <- matrix(rnorm(n*15), nrow=n)
+
+sigma <- matrix(0.9, nrow=15, ncol=15) + diag(rep(1-0.9, 15))
+A <- chol(sigma)
+X <- Z %*% A
+
+beta = c(1,-1,1.5,0.5,-0.5,rep(0,10))
+e = rnorm(10100)*3
+y = 3 + X %*% beta + e
+
+train <- data.frame(X[1:ntrain,], y=y[1:ntrain])
+test <- data.frame(X[(ntrain+1):n,], y=y[(ntrain+1):n])
+```
+
+
+### 4(d)
+```{r 4d}
+dat = data.frame(X)
+dat$y <- y
+
+fit = lm(y~X1+X2+X3+X4+X5,data=train)
+summary(fit)
+mean((test$y-predict(fit, test))^2)
+
+confint(fit)
+```
+
+The residual standard error is 3.2. Slopes for xi(i=1,2,3,4,5) are 0.9439, -1.6256, 2.7879, -0.3034, -0.3711. R-squared is 0.2407. Slope for x1 roughly equals the true parameter and the other slops aren't. Slope for x4 has the wrong sign, other slopes have the right signs. In terms of statistical significance, only slope for x3 is significant at 0.01 level. All the 95% confidence interval covers the true value.
+
+### 4(e)
+```{r 4e}
+mean((test$y-predict(fit, test))^2)
+```
+
+The value of MSE is 9.449501.
+
+### 4(f)
+```{r}
+fit_4f = lm(y ~ ., data = train)
+summary_4f = summary(fit_4f)
+coefs = summary_4f$coefficients
+
+betas_4f = coefs[2:16]
+se = coefs[18:32]
+ci_l = c()
+ci_u = c()
+for (idx in 1:length(betas_4f)) {
+  ci_l = append(ci_l, (betas_4f[idx] - 2 * se[idx]))
+  ci_u = append(ci_u, (betas_4f[idx] + 2 * se[idx]))
+}
+
+is_in = c()
+for (idx in 1:length(betas_4f)) {
+  if ((beta[idx] > ci_l[idx]) & (beta[idx] < ci_u[idx])) {
+    is_in = append(is_in, 1)
+  } else {
+    is_in = append(is_in, 0)
+  }
+}
+vars_in = sum(is_in)
+print(summary(fit_4f))
+```
+
+- `r vars_in` of the `r length(beta)` are in the confidence intervals
+- The only feature that's significant is x_3 or$\beta_3$. None of the other xs (1 through 5) are significant.
+- All of the signs are not correct for beta 1 through 5, $\beta_5$ should be positive.
+
+### 4(g)
+```{r}
+mse_4g = mean((test$y-predict(fit_4f, test))^2)
+```
+
+The MSE is `r mse_4g` for the full model.
+
+### 4(h)
+```{r}
+
+step_4h = stepAIC(lm(y ~., data = train), 
+                  direction = "both",
+                  trace = F)
+summary(step_4h)
+```
+
+The "right" variables did not come into the model.
+
+### 4(i)
+```{r}
+mse_4i = mean((test$y-predict(step_4h, test))^2)
+```
+
+The MSE is `r mse_4i` for the model found using stepAIC.
+
+### 4(j)
+```{r}
+x_4j = model.matrix(y ~ . -1, data = train)
+ 
+set.seed(1234)
+ridge_cv_4j = cv.glmnet(x_4j, train$y, alpha = 0, nfolds = 5)
+plot(ridge_cv_4j, xvar = 'lambda', label = T)
+title("Ridge Trace")
+```
+
+### 4(k)
+```{r}
+x_4k = model.matrix(y ~ . - 1, data = test) 
+mse_4k = mean((test$y - predict(ridge_cv_4j, s = ridge_cv_4j$lambda.min, x_4k))^2)
+```
+
+The MSE is `r mse_4k` for the Ridge model.
+
+### 4(l)
+```{r}
+x_4l = model.matrix(y ~ . -1, data = train)
+ 
+set.seed(1234)
+lasso_cv_4l = cv.glmnet(x_4l, train$y, alpha = 1, nfolds = 5)
+plot(lasso_cv_4l, xvar = 'lambda', label = T)
+title("Lasso Trace")
+```
+
+### 4(m)
+```{r}
+x_4m = model.matrix(y ~ . - 1, data = test) 
+mse_4m = mean((test$y - predict(lasso_cv_4l, s = lasso_cv_4l$lambda.min, x_4m))^2)
+```
+
+The MSE is `r mse_4m` for the Ridge model.
+
+### 4(n)
+```{r}
+source("hw5.R")
+rho = c(0.9,0.5,0.1)
+sigma = c(5,3,1)
+
+for (r in rho) {
+  for (s in sigma) {
+    hw5(rho = r, sigmae = s)
+    cat("Rho value: ", r, " ", "Sigma value: ", s, "\n")
+  }
+}
+```
+
+When there is moderate to low rho/multicollinearity, OLS generally preforms better than ridge or lasso regression. Ridge or lasso regression work better when there is high multicollinearity and moderate to high noise. When using lasso or ridge we will use lasso when noise is higher. In this test they preform best when rho is 0.9 and sigma is greater than or equal to 5. 
