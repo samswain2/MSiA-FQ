@@ -35,18 +35,7 @@ rownames(train) = 1:nrow(train_wrong_index)
 library(e1071)
 library(pROC)
 library(caret)
-
-# Train
-svm <- svm(factor(admit)~gre+gpa+rank, 
-          data = train, 
-          scale = T,
-          probability = T,
-          kernel = 'radial', # default linear
-          cost = 1, # cost of constraints violation (default: 1)
-          degree = 6, # needed for: polynomial (default: 3)
-          gamma = 1, # needed for all except linear (default: 1/(data dimension))
-          coef0 = 0 # needed for: polynomial, sigmoid (default: 0)
-)
+library(hash)
 ```
 
 #### Cross validation function
@@ -102,9 +91,9 @@ GridSearch_Custom <- function(nfolds = 5,
     auc_temp <- auc(roc_obj)[1]
     
     # Print temp values
-    #cat("Acc: ", acc_temp, "\n")
-    cat("AUC: ", auc_temp, "\n")
-    print("------------------")
+    # cat("Acc: ", acc_temp, "\n")
+    # cat("AUC: ", auc_temp, "\n")
+    # print("------------------")
     
     #temp_acc_list = append(x = temp_acc_list, values = acc_temp)
     temp_auc_list = append(x = temp_auc_list, values = auc_temp)
@@ -115,44 +104,89 @@ GridSearch_Custom <- function(nfolds = 5,
 
 ```{r}
 # Set parameters
-kernels = c('linear', 'polynomial', 'radial', 'sigmoid')
 nfolds = 5
-cost <- c(0.001 * 10^(seq(0,4,1)))
-degree <- c(seq(1, 4, 1))
-gamma <- c(0.001 * 10^(seq(0,6,1)))
-coef0 <- c(0.001 * 10^(seq(0,6,1)))
+kernels = c('linear', 'polynomial', 'radial', 'sigmoid')
+cost <- c(0.001, 0.1, 1)
+gamma <- c(0.001, 0.1, 1)
+coef0 <- c(1, 10, 100)
+degree <- c(3, 4, 5)
 
+# Set parameters testing set
+# cost <- c(1)
+# degree <- c(1)
+# gamma <- c(1)
+# coef0 <- c(1)
 
-
+# Init best parameter storage
+best_params = hash()
+best_params[["k"]] <- 'radial'
+best_params[["c"]] <- 1
+best_params[["g"]] <- 1/3
+best_params[["c0"]] <- 0
+best_params[["d"]] <- 3
+best_params[["auc"]] <- 0
+  
 for (k in kernels) {
   for (c in cost) {
     if (k == 'linear') {
-      GridSearch_Custom(nfolds = nfolds, 
-                        kernel = k, 
-                        cost = c)
+      auc <- GridSearch_Custom(nfolds = nfolds, 
+                               kernel = k, 
+                               cost = c)
+      if (auc > best_params[["auc"]]) {
+        best_params[["k"]] <- k
+        best_params[["c"]] <- c
+        best_params[["g"]] <- 1/3
+        best_params[["c0"]] <- 0
+        best_params[["d"]] <- 3
+        best_params[["auc"]] <- auc
+      }
     } else {
       for (g in gamma) {
         if (k == 'radial') {
-          GridSearch_Custom(nfolds = nfolds, 
-                            kernel = k, 
-                            cost = c, 
-                            gamma = g)
+          auc <- GridSearch_Custom(nfolds = nfolds, 
+                                   kernel = k, 
+                                   cost = c, 
+                                   gamma = g)
+          if (auc > best_params[["auc"]]) {
+            best_params[["k"]] <- k
+            best_params[["c"]] <- c
+            best_params[["g"]] <- g
+            best_params[["c0"]] <- 0
+            best_params[["d"]] <- 3
+            best_params[["auc"]] <- auc
+          }
         } else {
           for (c0 in coef0) {
             if (k == 'sigmoid') {
-              GridSearch_Custom(nfolds = nfolds, 
-                                kernel = k, 
-                                cost = c,
-                                gamma = g,
-                                coef0 = c0)
+              auc <- GridSearch_Custom(nfolds = nfolds, 
+                                       kernel = k, 
+                                       cost = c,
+                                       gamma = g,
+                                       coef0 = c0)
+              if (auc > best_params[["auc"]]) {
+                best_params[["k"]] <- k
+                best_params[["c"]] <- c
+                best_params[["g"]] <- g
+                best_params[["c0"]] <- c0
+                best_params[["d"]] <- 3
+                best_params[["auc"]] <- auc
+              }
             } else {
               for (d in degree) {
-                GridSearch_Custom(nfolds = nfolds, 
-                                  kernel = k, 
-                                  cost = c,
-                                  gamma = g,
-                                  coef0 = c0,
-                                  degree = d)
+                auc <- GridSearch_Custom(nfolds = nfolds, 
+                                         kernel = k, 
+                                         cost = c,
+                                         gamma = g,
+                                         coef0 = c0,
+                                         degree = d)
+                if (auc > best_params[["auc"]]) {
+                  best_params[["k"]] <- k
+                  best_params[["c"]] <- c
+                  best_params[["g"]] <- g
+                  best_params[["c0"]] <- c0
+                  best_params[["d"]] <- d
+                  best_params[["auc"]] <- auc
+                }
               }
             }
           }
@@ -162,3 +196,43 @@ for (k in kernels) {
   }
 }
 ```
+
+The model with kernel `r best_params[["k"]]` performed the best. The hyper parameters are as follows:
+</br>
+- cost: `r best_params[["c"]]`
+</br>
+- gamma: `r best_params[["g"]]`
+</br>
+- coef0: `r best_params[["c0"]]`
+</br>
+- degree: `r best_params[["d"]]`
+</br>
+
+### 1(c)
+```{r}
+
+
+# Train final SVM
+svm_final <- svm(factor(admit) ~ gre + gpa + rank, 
+                data = train,
+                scale = T,
+                probability = T,
+                kernel = best_params[["k"]],
+                cost = best_params[["c"]],
+                degree = best_params[["d"]], 
+                gamma = best_params[["g"]], 
+                coef0 = best_params[["c0"]]
+                )
+
+# Get final prediction
+pred_final <- predict(svm_final, 
+                     test, 
+                     decision.values = F, 
+                     probability = F)
+
+# Get accuracy of final model
+acc_final <- mean(pred_final==test$admit)
+print(acc_final)
+```
+
+The final accuracy of my model is `r acc_final`
