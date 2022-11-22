@@ -1,0 +1,17 @@
+---
+title: "HW 03"
+author: "Samuel Swain"
+date: "2022-11-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+### 1(a)
+```{r}
+nlm()
+```

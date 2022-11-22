@@ -1,0 +1,63 @@
+---
+title: "HW 06"
+author: "Samuel Swain"
+date: "2022-11-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+#### Load dataframe 
+```{r}
+toxicity = data.frame(x=1:6, n=rep(250,6), y=c(28,53,93,126,172,197))
+fit = glm(y/n ~ x, binomial, toxicity, weight=n)
+p_hats = c(toxicity$y/toxicity$n)
+y_is = c(toxicity$y)
+```
+
+### 1(a)
+```{r}
+plot(toxicity$x, (toxicity$y/toxicity$n))
+```
+
+Yes, we can see that there are 6 different categories with a probability between zero and one. Therefore, we can use a MNLogit model to try to predict the outcome.
+
+### 1(b)
+```{r}
+plot(toxicity$x, (toxicity$y/toxicity$n))
+points(toxicity$x, fit$fitted.values[1:6], pch=2, col=2)
+x = seq(1, 6,length=100)
+lines(x, predict(fit, data.frame(toxcicity=x), type="response"), col=2)
+```
+
+### 1(c)
+Since $e^{b_1} =$ `r exp(fit$coef[2])`, we estimate that for every one unit increase in $x_1$, the odds of the insect dying increases by `r exp(fit$coef[2])` times.
+
+### 1(d)
+The estimated probability that an insect dies when $x=3.5$ is `r predict(fit, data.frame(x=3.5))`.
+
+### 1(e)
+```{r}
+x_1e = (-fit$coef[1])/fit$coef[2]
+```
+
+For a $50\%$ death rate, the toxicity needs to be set equal to `r x_1e`.
+
+### 1(f)
+```{r}
+coef_1f = confint(fit, level = .99)
+conf_ones = exp(coef_1f[c(2, 4)])
+```
+
+The CI for $e^{\beta_{1}}$ is `r conf_ones[1]` to `r conf_ones[2]`.
+
+# Question 2
+
+```{r}
+y_hat_sm = 0
+-2 * (y_hat_sm * log(p_hats[1]) + (1 - y_hat_sm) * log(1 - p_hats[1]))
+```
