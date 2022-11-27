@@ -12,6 +12,326 @@ knitr::opts_chunk$set(echo = TRUE)
 # Question 1
 
 ### 1(a)
+Likelihood and log(Likelihoods):
+$$
+L(\theta_i\ |\ n,\ y_i)= {n\choose y_i}\Pi^{6}_{i=1}\theta_{i}^{y_{i}};\ n=100 
+\\
+ln(L_{i}) = ln({n\choose y_i}) + \Sigma_{i=1}^{6}y_i\theta_i
+\\
+y_6 = n-\Sigma_{i=1}^{5}y_i = 19,\ \theta_6=1-\Sigma_{i=1}^{5}\theta_i
+\\
+\alpha = ln(L_i) = ln({n\choose y_i}) + \Sigma_{i=1}^{5}y_i\theta_i + 19 (\theta_6)
+$$
+Differentiate w.r.t. $\theta's$:
+$$
+\frac{d\alpha}{d\theta_1} = \frac{y_1}{\theta_1} - \frac{19}{\theta_6} = \frac{18}{\theta_1} - \frac{19}{\theta_6} = 0
+\\
+\frac{d\alpha}{d\theta_2} = \frac{11}{\theta_2} - \frac{19}{\theta_6} = 0
+\\
+\frac{d\alpha}{d\theta_3} = \frac{9}{\theta_3} - \frac{19}{\theta_6} = 0
+\\
+\frac{d\alpha}{d\theta_4} = \frac{25}{\theta_4} - \frac{19}{\theta_6} = 0
+\\
+\frac{d\alpha}{d\theta_5} = \frac{18}{\theta_5} - \frac{19}{\theta_6} = 0
+$$
+
+After solving:
+$$
+18\theta_6 = 19\theta_1
+\\
+11\theta_6 = 19\theta_2
+\\
+9\theta_6 = 19\theta_3
+\\
+25\theta_6 = 19\theta_4
+\\
+18\theta_6 = 19\theta_5
+\\
+\theta_1 + \theta_2 + \theta_3 + \theta_4 + \theta_5 + \theta_6 = 1
+$$
+
+We attain:
+$$
+\theta_1 = \frac{18}{100},\ \theta_2 = \frac{11}{100},\ \theta_3 = \frac{9}{100}
+\\
+\theta_4 = \frac{25}{100},\ \theta_5 = \frac{18}{100},\ \theta_6 = \frac{19}{100}
+$$
+
+### 1(b)
+Prior:
+$$
+P(\overset{\rightharpoonup}{\theta}\ |\ \overset{\rightharpoonup}{\alpha}=1) \frac{1}{B(\overset{\rightharpoonup}{\alpha}=1)}\Pi^{12}_{i=1}\theta_i^{\alpha_i-1},\ \alpha=1
+$$
+
+Posterior:
+$$
+P(\overset{\rightharpoonup}{\theta}\ |\ delta) \propto P(delta\ |\ \overset{\rightharpoonup}{\theta})*P(\overset{\rightharpoonup}{\theta}\ |\ \alpha=1)
+\\
+P(delta\ |\ \overset{\rightharpoonup}{\theta}) = \Pi^6_{i=1}{100\choose y_i}\theta^{y_i}
+\\
+P(\overset{\rightharpoonup}{\theta}\ |\ \alpha=1) = \frac{1}{B(\overset{\rightharpoonup}{\alpha}=1)}
+$$
+
+log(Posterior):
+$$
+\alpha = log(P(delta\ |\ \overset{\rightharpoonup}{\theta})) \propto \frac{1}{B(\alpha=1)} + \Sigma^6_{i=1}(\frac{100}{y_i}) + y_i * log(\theta_i)
+$$
+
+Differentiate w.r.t. $\theta's$:
+$$
+\theta_1 = \frac{18}{100}, \theta_2 = \frac{11}{100}, \theta_3 = \frac{9}{100}
+\\
+\theta_4 = \frac{25}{100}, \theta_5 = \frac{18}{100}, \theta_6 = \frac{19}{100}
+$$
+
+# Question 2
+
+### 2(a)
+
+Biased
+$$
+P(x_0,\ x_1,\ ...,\ x_n:\pi_0,\ \pi_1,\ ...,\ \pi_n)
+\\
+= P(x_n\ |\ \pi_n = bias)*P(\pi_n = bias\ |\ \pi_{n-1} = bias)*\ 
+\\
+...
+\\
+\ *P(x_1\ |\ \pi_1 = bias)*P(\pi_1 = bias\ |\ \pi_0 = bias)
+$$
+
+- The biased probability is `r (4/13) * 0.5 * (4/13) * 0.75 * ((2/13) *  0.75)^4`
+
+Fair Likelihood:
+$$
+P(x_0,\ x_1,\ ...,\ x_n:\pi_0,\ \pi_1,\ ...,\ \pi_n)
+\\
+= P(x_n\ |\ \pi_n = fair)*P(\pi_n = fair\ |\ \pi_{n-1} = fair)*\ 
+\\
+...
+\\
+\ *P(x_1\ |\ \pi_1 = fair)*P(\pi_1 = fair\ |\ \pi_0 = fair)
+$$
+
+- The fair probability is `r ((1/6)*0.75)^5 * (1/6) *0.5`
+
+As we can see, the biased probability is higher. Thus, it's more likely that the hidden states are not being fair.
+
+### 2(b)
+
+#### Get probability vectors
 ```{r}
-nlm()
+states = expand.grid(0:1, 0:1, 0:1, 0:1, 0:1, 0:1)
+n_2b = nrow(states)
+
+unfair_probs = c(4/13, 4/13, 2/13, 2/13, 2/13, 2/13)
+fair_probs = c(rep(1/6, 6))
 ```
+
+#### Calc probs
+```{r}
+probs = c()
+for (i in 1:n_2b) {
+  p_now = 1 * 0.5
+  
+  if(states[i,1]==0){
+    p_now = p_now*fair_probs[1]
+  }
+  else{
+    p_now = p_now*unfair_probs[1]
+  }
+  
+  for(j in 2:6){
+    if(states[i,j]!=states[i,j-1]){
+      p_now = p_now * 0.25
+    }
+    else{
+      p_now = p_now *0.75
+    }
+    
+    if(states[i,j]==0){
+      p_now = p_now * fair_probs[j]
+    }
+    else{
+      p_now = p_now * unfair_probs[j]
+    }
+  }
+  probs = c(probs,p_now)
+}
+```
+
+#### Get and print max probs
+
+The combination of probabilities with the maximum likelihood is the following:
+```{r}
+print(states[which.max(probs), ])
+```
+
+- The maximum likelihood estimate is `r max(probs)`
+
+# Question 3
+
+### 3(a)
+
+#### Read in data, get train/test sets
+```{r}
+df <- read.csv(file = 'gradAdmit.csv', header = T)
+
+set.seed(400)
+n = nrow(df)
+# Get 20% for test set
+sample = sample.int(n = n, size = floor(.2*n), replace = F)
+train_wrong_index = df[-sample,]
+test = df[sample,]
+train = train_wrong_index
+rownames(train) = 1:nrow(train_wrong_index)
+```
+
+#### Calculate balance of each dataset
+`r mean(train$admit == 1)*100` percent of the students in the training data were admitted and `r mean(test$admit == 1)*100` in the testing data set were admitted.
+
+### 3(b)
+#### Train best model, get test predictions
+```{r}
+library(e1071)
+library(MLmetrics)
+svm_final <- svm(factor(admit) ~ gre + gpa + rank, 
+                data = train,
+                scale = T,
+                probability = T,
+                kernel = "polynomial",
+                cost = 1,
+                degree = 5, 
+                gamma = 1, 
+                coef0 = 1
+                )
+
+pred_final <- predict(svm_final, 
+                     test, 
+                     decision.values = F, 
+                     probability = F)
+```
+
+#### Get requested metrics
+```{r}
+precision = Precision(test$admit, pred_final)
+recall = Recall(test$admit, pred_final)
+specificity = Specificity(test$admit, pred_final)
+```
+
+- Precision: `r precision`
+
+- Recall: `r recall`
+
+- Specificity: `r specificity`
+
+### 3(c)
+#### Get percent increase needed
+```{r}
+diff_train = sum(train$admit==0)-sum(train$admit==1)
+pct_over = diff_train/abs(sum(train$admit==1))*100
+```
+
+We need `r pct_over` percent more admitted observations to have a balanced data set.
+
+#### Oversample using SMOTe
+```{r}
+library("DMwR")
+train$admit = as.factor(train$admit) 
+train_SMOTe = SMOTE(admit ~ ., train, perc.over = pct_over)
+
+table(train_SMOTe$admit)
+```
+
+### 3(d)
+#### Train model and calculate metrics
+```{r}
+# Model
+svm_final <- svm(factor(admit) ~ gre + gpa + rank, 
+                data = train_SMOTe,
+                scale = T,
+                probability = T,
+                kernel = "polynomial",
+                cost = 1,
+                degree = 5, 
+                gamma = 1, 
+                coef0 = 1
+                )
+
+# Predictions
+pred_final_3d <- predict(svm_final, 
+                     test, 
+                     decision.values = F, 
+                     probability = F)
+
+# Metrics
+precision_3d = Precision(test$admit, pred_final_3d)
+recall_3d = Recall(test$admit, pred_final_3d)
+specificity_3d = Specificity(test$admit, pred_final_3d)
+```
+
+- Precision: `r precision_3d`
+
+- Recall: `r recall_3d`
+
+- Specificity: `r specificity_3d`
+
+# Question 4
+### 4(a)
+```{r}
+set.seed(400)
+lambdas = c(1)
+results = c()
+results_real = c()
+
+for (i in lambdas){
+  
+  n = 10^8/i^2
+  x = runif(n, 0, 1)
+  y = -log(x)/i
+  g = sin(y)/i
+  
+  results = append(results, sum(g)/n)
+  results_real = append(results_real, (1 / (1+i^2)))
+}
+```
+
+The probability of drawing a sample $x \ge 10\pi$ is `r mean(y>=(10*pi))`
+
+### 4(b)
+
+From assignment 1 question 2 we get the following integral:
+$$
+\int_{0}^{\infty} e^{-\lambda x}sin(x) \ dx = \frac{1}{1+\lambda^2} \Rightarrow \frac{1}{2} \ when \ \lambda=1
+$$
+
+We also know:
+$$
+\int_{0}^{10\pi} e^{-\lambda x}sin(x) \ dx = \frac{1}{2} - \frac{e^{-10\pi}}{2}
+$$
+
+Thus:
+$$
+\int_{10\pi}^{\infty} e^{-\lambda x}sin(x) \ dx = \frac{e^{-10\pi}}{2}
+$$
+
+### 4(c)
+
+To find a $p^*(x)$ larger than $p(x)$ when $x \ge 10\pi$ and $0$ when $x \lt 10\pi$, we can set $p^*(x)$ equal to $p(x)$ but shifted to the right. Therefore we end up with $p^*(x) = e^{10\pi-x}$.
+
+### 4(d)
+
+```{r}
+set.seed(400)
+n = 10^6
+d = rexp(n, 1)
+
+total = 0
+for (i in d) {
+  total = total + sin(i) * exp(-10*pi)
+}
+
+estimate = total/n
+```
+
+The estimate is `r estimate`. This is very close to the real value of `r exp(-10*pi)/2`.
+
