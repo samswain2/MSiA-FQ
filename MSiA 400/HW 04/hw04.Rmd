@@ -1,0 +1,452 @@
+---
+title: "hw04"
+author: "Samuel Swain"
+date: "2022-12-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+```{r}
+df = read.table(file = "redwine.txt", header = TRUE)
+```
+
+### 1(a)
+```{r}
+stem(df$QA)
+```
+
+```{r}
+hist(df$FA)
+```
+
+```{r}
+hist(df$VA)
+```
+
+```{r}
+hist(df$CA)
+```
+
+```{r}
+hist(df$RS)
+```
+
+```{r}
+stem(df$CH)
+```
+
+```{r}
+hist(df$FS)
+```
+
+```{r}
+hist(df$SD)
+```
+
+```{r}
+hist(df$DE)
+```
+
+```{r}
+stem(df$PH)
+```
+
+```{r}
+hist(df$SU)
+```
+
+```{r}
+hist(df$AL)
+```
+
+### 1(b)
+
+```{r}
+boxplot(df[, c(1, 2, 5, 10, 12)])
+```
+
+```{r}
+boxplot(df[, c(3, 4, 6, 11)])
+```
+
+```{r}
+boxplot(df[, c(7)], main = "FS")
+```
+
+```{r}
+boxplot(df[, c(8)], main = "SD")
+```
+
+```{r}
+boxplot(df[, c(9)], main = "DE")
+```
+
+Variables With Outliers:
+</br>
+- SD
+</br>
+- CA
+</br>
+- SU
+</br>
+- RS
+
+### 1(c)
+```{r}
+library(e1071)
+for (column in 1:ncol(df)) {
+  cat("Column: ", colnames(df)[column], "\n", "skewness: ", 
+      skewness(df[, column]), 
+      "\n",
+      "kurtosis: ",
+      kurtosis(df[, column]),
+      "\n")
+}
+```
+
+As we can see from the output above:
+</br>
+FA:
+</br>
+- Right skewed
+</br>
+RS:
+</br>
+- Heavy skew
+</br>
+- Heavy outliers
+</br>
+CH: 
+</br>
+- Highly right skewed
+</br>
+- Heavy right tail
+</br>
+FS:
+</br>
+- Highly right skewed
+</br>
+SD:
+</br>
+- Heavy skew
+</br>
+- Heavy outliers
+</br>
+PH: 
+</br>
+- Right skewed
+</br>
+- Heavy right tail
+</br>
+SU:
+</br>
+- Highly right skewed
+</br>
+- Heavy right tail
+</br>
+AL: 
+</br>
+- Right skewed
+
+### 1(d)
+```{r}
+qqnorm(df$QA)
+```
+
+```{r}
+qqnorm(df$FA)
+```
+
+```{r}
+qqnorm(df$VA)
+```
+
+```{r}
+qqnorm(df$CA)
+```
+
+```{r}
+qqnorm(df$RS)
+```
+
+```{r}
+qqnorm(df$CH)
+```
+
+```{r}
+qqnorm(df$FS)
+```
+
+```{r}
+qqnorm(df$SD)
+```
+
+```{r}
+qqnorm(df$DE)
+```
+
+```{r}
+qqnorm(df$PH)
+```
+
+```{r}
+qqnorm(df$SU)
+```
+
+```{r}
+qqnorm(df$AL)
+```
+
+Yes, these confirm my conclusions from the previous question.
+
+# Question 2
+
+### 2(a)
+```{r}
+colSums(is.na(df))
+```
+
+RS and SD have missing values.
+
+```{r}
+sum(rowSums(is.na(df)))
+```
+
+There are 39 rows with missing values.
+
+### 2(b)
+
+#### Create folds
+```{r}
+library(caret)
+set.seed(1)
+n_folds = 5
+folds = createFolds(1:nrow(df), k = n_folds)
+```
+
+#### Impute data function
+```{r}
+random_impute = function (a) {
+  missing_values = is.na(a)
+  # number of missing values
+  number_missing_values = sum(missing_values) 
+  a.obs = a[!missing_values]
+  imputed = a
+  # sample with replacement
+  imputed[missing_values] = sample(a.obs,
+                                   number_missing_values,
+                                   replace=T)
+  return(imputed)
+}
+```
+
+#### Linear regression models
+```{r}
+set.seed(1)
+mse_train = rep(NA, n_folds)
+mse_test  = rep(NA, n_folds)
+for (fold in 1:n_folds) {
+  train = df[-folds[[fold]],]
+  test  = df[folds[[fold]],]
+  
+  train = random_impute(train)
+  test  = random_impute(test)
+  
+  fit = lm(QA ~ ., data = train)
+  preds_train = predict(fit, train)
+  preds_test  = predict(fit, test)
+  
+  mse_train[fold] = mean((train$QA - preds_train)^2)
+  mse_test[fold]  = mean((test$QA - preds_test)^2)
+}
+avg_mse_train = mean(mse_train)
+avg_mse_test  = mean(mse_test)
+```
+
+Average train MSE: `r round(avg_mse_train, 5)`
+</br>
+Average test MSE: `r round(avg_mse_test, 5)`
+
+### 2(c)
+#### Impute data function (Mode)
+```{r}
+Mode = function(x) {
+  mode = as.numeric(names(sort(table(x),decreasing=T))[1])
+  return(mode)
+} 
+
+mode_impute = function (a){
+  missing_values = is.na(a)
+  imputed = a
+  imputed[missing_values] = Mode(a)
+  return(imputed)
+}
+```
+
+#### Linear regression models
+```{r}
+set.seed(1)
+mse_train = rep(NA, n_folds)
+mse_test  = rep(NA, n_folds)
+for (fold in 1:n_folds) {
+  train = df[-folds[[fold]],]
+  test  = df[folds[[fold]],]
+  
+  train$SD = mode_impute(train$SD)
+  train$RS = mode_impute(train$RS)
+  test$SD  = mode_impute(test$SD)
+  test$RS  = mode_impute(test$RS)
+  
+  fit = lm(QA ~ ., data = train)
+  preds_train = predict(fit, train)
+  preds_test  = predict(fit, test)
+  
+  mse_train[fold] = mean((train$QA - preds_train)^2)
+  mse_test[fold]  = mean((test$QA - preds_test)^2)
+}
+avg_mse_train = mean(mse_train)
+avg_mse_test  = mean(mse_test)
+```
+
+Average train MSE: `r round(avg_mse_train, 5)`
+</br>
+Average test MSE: `r round(avg_mse_test, 5)`
+
+### 2(d)
+#### Impute data function (Mode)
+```{r}
+avg_impute = function (a){
+  missing = is.na(a)
+  imputed = a
+  imputed[missing] = mean(a, na.rm=T)
+  return(imputed)
+}
+```
+
+#### Linear regression models
+```{r}
+set.seed(1)
+mse_train = rep(NA, n_folds)
+mse_test  = rep(NA, n_folds)
+for (fold in 1:n_folds) {
+  train = df[-folds[[fold]],]
+  test  = df[folds[[fold]],]
+  
+  train$SD = avg_impute(train$SD)
+  train$RS = avg_impute(train$RS)
+  test$SD  = avg_impute(test$SD)
+  test$RS  = avg_impute(test$RS)
+  
+  fit = lm(QA ~ ., data = train)
+  preds_train = predict(fit, train)
+  preds_test  = predict(fit, test)
+  
+  mse_train[fold] = mean((train$QA - preds_train)^2)
+  mse_test[fold]  = mean((test$QA - preds_test)^2)
+}
+avg_mse_train = mean(mse_train)
+avg_mse_test  = mean(mse_test)
+```
+
+Average train MSE: `r round(avg_mse_train, 5)`
+</br>
+Average test MSE: `r round(avg_mse_test, 5)`
+
+### 2(e)
+
+#### Linear regression models
+```{r}
+library(DMwR)
+set.seed(1)
+mse_train = rep(NA, n_folds)
+mse_test  = rep(NA, n_folds)
+for (fold in 1:n_folds) {
+  train = df[-folds[[fold]],]
+  test  = df[folds[[fold]],]
+  
+  train = knnImputation(train, k=5, distData = train)
+  test = knnImputation(test, k=5, distData = test)
+  
+  fit = lm(QA ~ ., data = train)
+  preds_train = predict(fit, train)
+  preds_test  = predict(fit, test)
+  
+  mse_train[fold] = mean((train$QA - preds_train)^2)
+  mse_test[fold]  = mean((test$QA - preds_test)^2)
+}
+avg_mse_train = mean(mse_train)
+avg_mse_test  = mean(mse_test)
+```
+
+Average train MSE: `r round(avg_mse_train, 5)`
+</br>
+Average test MSE: `r round(avg_mse_test, 5)`
+
+### 2(f)
+#### Linear regression models
+```{r}
+library(mice)
+set.seed(1)
+mse_train = rep(NA, n_folds)
+mse_test  = rep(NA, n_folds)
+for (fold in 1:n_folds) {
+  train = df[-folds[[fold]],]
+  test  = df[folds[[fold]],]
+  
+  train = complete(mice(train, seed=1, print=F), 5)
+  test  = complete(mice(test,  seed=1, print=F), 5)
+  
+  fit = lm(QA ~ ., data = train)
+  preds_train = predict(fit, train)
+  preds_test  = predict(fit, test)
+  
+  mse_train[fold] = mean((train$QA - preds_train)^2)
+  mse_test[fold]  = mean((test$QA - preds_test)^2)
+}
+avg_mse_train = mean(mse_train)
+avg_mse_test  = mean(mse_test)
+```
+
+Average train MSE: `r round(avg_mse_train, 5)`
+</br>
+Average test MSE: `r round(avg_mse_test, 5)`
+
+### 2(g)
+
+#### Linear regression models
+```{r}
+set.seed(1)
+mse_train = rep(NA, n_folds)
+mse_test  = rep(NA, n_folds)
+for (fold in 1:n_folds) {
+  train = df[-folds[[fold]],]
+  test  = df[folds[[fold]],]
+  
+  train = train[complete.cases(train), ]
+  test  = test[complete.cases(test), ]
+  
+  fit = lm(QA ~ ., data = train)
+  preds_train = predict(fit, train)
+  preds_test  = predict(fit, test)
+  
+  mse_train[fold] = mean((train$QA - preds_train)^2)
+  mse_test[fold]  = mean((test$QA - preds_test)^2)
+}
+avg_mse_train = mean(mse_train)
+avg_mse_test  = mean(mse_test)
+```
+
+Average train MSE: `r round(avg_mse_train, 5)`
+</br>
+Average test MSE: `r round(avg_mse_test, 5)`
+
+### 2(h)
+
+All of the different data imputations methods performed very similarly. This is probably because there weren't too many missing values in the first place.
+
+KNN with nearest neighbors set to 5 performed the best by a tiny bit. The margin is so small that I think it doesn't mean anything actually. With other data the result could slightly skew in the favor of another data imputation method.

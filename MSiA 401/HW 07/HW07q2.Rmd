@@ -1,0 +1,115 @@
+---
+title: "HW07q2"
+author: "Samuel Swain"
+date: "2022-11-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 2
+
+#### Data
+```{r}
+dat = expand.grid(factory=c("East", "West"), accident=c("No", "Yes"))
+dat$y = c(645,1275, 28,31)
+tab = matrix(dat$y, nrow=2,
+dimnames=list(factory=c("East", "West"), accident=c("No", "Yes")))
+```
+
+### 2(a)
+```{r}
+fit_2a = glm(y ~ factory + accident, poisson, dat)
+fit_2a
+```
+
+### 2(b)
+```{r}
+predict(fit_2a, newdata = data.frame(factory = factor("West"),
+   accident = factor("Yes")), type = "response")
+```
+To attain the result manually, we can use the equation bellow:
+$$
+e^{(6.481 + 0.663 + -3.483)} = 38.9
+$$
+
+### 2(c)
+```{r}
+fit_2c = glm(y ~ factory*accident, poisson, dat)
+fit_2c
+```
+
+```{r}
+predict(fit_2c, newdata = data.frame(factory = factor("West"),
+   accident = factor("Yes")), type = "response")
+```
+
+To attain the result manually, we can use the equation bellow:
+$$
+e^{(6.4693 + 0.6815 - 3.1370 - 0.5797)} = 31.0
+$$
+
+### 2(d)
+We get a residual deviance of 0 because our predicted model is the saturated model. Our model can adjust to fit any row in the data frame perfectly. Thus, when we subtract the log-likelihood of the saturated model from the log-likelihood of the predicted model, we will get zero.
+
+### 2(e)
+```{r}
+summary(fit_2c)
+```
+
+The z-value for the interaction term is $-2.186$. This is less than $-1.645$. We can reject the null that $\beta_{factory*accident}=0$ and conclude $\beta_{factory*accident}\ne0$.
+
+### 2(f)
+The result from question 2 part e tells us the west factory on average is less likely to have accidents.
+
+### 2(g)
+```{r}
+d = drop1(fit_2c, test="Chisq")
+d
+p_val_2g = d$`Pr(>Chi)`[2]
+chi_sq_2g = qchisq(p_val_2g, 1, lower.tail = FALSE)
+```
+
+Using the likelihood ratio test to evaluate the interaction, we get a chi-squared value of `r chi_sq_2g` and a p-value of `r p_val_2g`.
+
+### 2(h)
+```{r}
+east_accident_0 = predict(fit_2c, newdata = data.frame(factory = factor("East"), accident = factor("No")), type = "link")
+east_accident_1 = predict(fit_2c, newdata = data.frame(factory = factor("East"), accident = factor("Yes")), type = "link")
+
+west_accident_0 = predict(fit_2c, newdata = data.frame(factory = factor("West"), accident = factor("No")), type = "link")
+west_accident_1 = predict(fit_2c, newdata = data.frame(factory = factor("West"), accident = factor("Yes")), type = "link")
+
+log_odds_east_2h = east_accident_1 - east_accident_0
+log_odds_west_2h = west_accident_1 - west_accident_0
+```
+
+- The log odds of an accident in the east is `r log_odds_east_2h`
+- The log odds of an accident in the west is `r log_odds_west_2h`
+
+### 2(i)
+
+```{r}
+c = log_odds_east_2h
+d = log_odds_west_2h - log_odds_east_2h
+cat("c: ", c, "\n", "d: ", d)
+```
+
+$$
+log(\frac{\pi_{1|i}}{1-\pi_{1|i}}) = log(\frac{\pi_{1|i}}{\pi_{0|i}}) 
+\\
+= log(m_{i0}) + log(\frac{m_{i1}}{m_{i0}}) * west
+\\
+= -3.1370\ -\ 0.5797*west
+$$
+
+### 2(j)
+```{r}
+fit_2j = glm(accident ~ factory, binomial, dat, weights = y)
+summary(fit_2j)
+```
+
+### 2(k)
+I would expect the estimated logistic regression to be just the intercept: $log(\frac{\pi_{1|i}}{1-\pi_{1|i}}) = -3.1370$

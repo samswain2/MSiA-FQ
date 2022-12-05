@@ -1,0 +1,118 @@
+---
+title: "Mini Project II"
+author: "Samuel Swain"
+date: "2022-12-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libs
+```{r}
+library(dplyr)
+library(DMwR)
+library(ggplot2)
+library(tidyr)
+library(pROC)
+```
+
+### Load in data
+```{r}
+# Read data, test train split
+df = read.csv("bookall.csv")
+df_train = df[df$train == 1, -c(1, 2)]
+df_test = df[df$train == 0, -c(1, 2)]
+
+# Get test train split of supplied training data
+set.seed(400)
+n = nrow(df_train)
+sample = sample.int(n = n, size = floor(.2*n), replace = F)
+train_train = df_train[-sample,]
+test_train = df_train[sample,]
+```
+
+### EDA
+
+#### Plot of all features
+```{r}
+eda_features = train_train[, c(1:6)]
+
+plot(eda_features)
+```
+
+#### Histograms
+```{r}
+ggplot(gather(eda_features), aes(value)) + 
+    geom_histogram(bins = 10) + 
+    facet_wrap(~key, scales = 'free_x')
+```
+#### Checking balance
+```{r}
+train_train_class <- train_train %>%
+    mutate(target_class = if_else(train_train$target > 0.00, 1, 0))
+train_train_class = train_train_class[, -1]
+test_train_class <- test_train %>%
+    mutate(target_class = if_else(test_train$target > 0.00, 1, 0))
+test_train_class = test_train_class[, -1]
+
+table(test_train_class$target_class)
+```
+
+As we can see, there are many more who didn't buy anything than bought something. We have imbalanced data. We will need to over-sample the minority case.
+
+### Oversampling
+```{r}
+# Calculate percent needed for over-sampling
+diff_train = sum(train_train_class$target_class==0)-sum(train_train_class$target_class==1)
+pct_over = diff_train/abs(sum(train_train_class$target_class==1))*100
+# Over-sample
+train_train_class$target_class = as.factor(train_train_class$target_class)
+train_SMOTe = SMOTE(target_class ~ ., train_train_class, 
+                    perc.over = pct_over)
+
+# Create balanced, over-sampled data-frame
+train_oversample = train_train_class[train_train_class$target_class==0,]
+temp = train_SMOTe[train_SMOTe$target_class==1,]
+train_oversample = rbind(train_oversample, temp)
+```
+
+### Fit model
+```{r}
+# Features controls whether all of the f_ or m_ variables will be included in the model
+# Un-comment the line below if you want to include or exclude the f_ or m_ variables
+
+features = c(# Include the regular factors
+             seq(from=1, to=5),
+             # f_ variables
+             # seq(from=6, to=35), 
+             # m_ variables
+             seq(from=36, to=65), 
+             # Include the categorical y variable, target_class
+             66)
+
+fit_logistic = glm(target_class ~ log(r) + log(fitem)  +
+                 . - tof- r - fitem - ford - m, 
+               data = train_oversample[features], 
+               family = "binomial")
+
+summary(fit_logistic)
+```
+
+### Test predictions
+```{r}
+preds_df = data.frame(preds = predict(fit_logistic, 
+        newdata = test_train_class, 
+        type = "response"))
+
+preds_temp <- preds_df %>% 
+  mutate(pred_class = if_else(preds_df$preds >= 0.5, 1, 0))
+
+cat("Accuracy: ", 
+    mean(preds_temp$pred_class == test_train_class$target_class), 
+    "\n", 
+    "Warning: \n")
+
+plot.roc(train_oversample$target_class,fit_logistic$fitted.values, legacy.axes=T, print.auc=T, print.auc.x=1, print.auc.y=.9)
+```
