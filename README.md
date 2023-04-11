@@ -1,5 +1,5 @@
 # MSiA-FQ
-Repo for coding-based homeworks for the MSiA Program Fall Quarter.
+Repo containing all homework for the MSiA Program Fall Quarter.
 
 ## Courses (Fall Quarter)
 - MSiA 400: Everything Starts with Data
